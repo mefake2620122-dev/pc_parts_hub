@@ -1,0 +1,24 @@
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Dependencies
+node_modules/
+/.pnp
+.pnp.js
+
+# Production build outputs
+dist/
+build/
+
+# Local database
+server/data/*.sqlite
+server/data/*.sqlite-journal
+server/uploads/*
+!server/uploads/.gitkeep
+
+# System files
+.DS_Store
+Thumbs.db
+*.log

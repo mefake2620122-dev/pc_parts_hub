@@ -1,0 +1,7 @@
+# Robots.txt for PC PART HUB
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+Sitemap: http://localhost:5000/sitemap.xml
