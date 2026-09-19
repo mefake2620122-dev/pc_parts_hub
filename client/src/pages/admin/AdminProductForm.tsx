@@ -267,10 +267,10 @@ export const AdminProductForm: React.FC = () => {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-8">
+      <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
         
         {/* Card 1: Core Details */}
-        <div className="p-6 sm:p-8 rounded-3xl bg-white border border-black/8 shadow-apple-card space-y-5">
+        <div className="p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl bg-white border border-black/8 shadow-apple-card space-y-5">
           <h2 className="text-xs font-bold uppercase tracking-wider text-[#1d1d1f] border-b border-black/5 pb-2">
             1. Basic Information
           </h2>
@@ -340,7 +340,7 @@ export const AdminProductForm: React.FC = () => {
         </div>
 
         {/* Card 2: Pricing & Stock */}
-        <div className="p-6 sm:p-8 rounded-3xl bg-white border border-black/8 shadow-apple-card space-y-5">
+        <div className="p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl bg-white border border-black/8 shadow-apple-card space-y-5">
           <h2 className="text-xs font-bold uppercase tracking-wider text-[#1d1d1f] border-b border-black/5 pb-2">
             2. Pricing, Condition & Stock
           </h2>
@@ -399,7 +399,7 @@ export const AdminProductForm: React.FC = () => {
 
           </div>
 
-          <div className="flex items-center gap-6 pt-2">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 pt-2">
             <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-[#1d1d1f]">
               <input
                 type="checkbox"
@@ -423,15 +423,15 @@ export const AdminProductForm: React.FC = () => {
         </div>
 
         {/* Card 3: Images */}
-        <div className="p-6 sm:p-8 rounded-3xl bg-white border border-black/8 shadow-apple-card space-y-5">
+        <div className="p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl bg-white border border-black/8 shadow-apple-card space-y-5">
           <h2 className="text-xs font-bold uppercase tracking-wider text-[#1d1d1f] border-b border-black/5 pb-2">
             3. Product Images
           </h2>
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             <label className="flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-2xl bg-[#f5f5f7] hover:bg-[#e5e5ea] border border-black/10 border-dashed cursor-pointer text-xs font-semibold text-[#1d1d1f] transition">
-              <Upload className="w-4 h-4 text-[#0071e3]" />
-              <span>{uploading ? 'Uploading to Server...' : 'Upload Image Files (JPG/PNG/WEBP)'}</span>
+              <Upload className="w-4 h-4 text-[#0071e3] shrink-0" />
+              <span className="text-center">{uploading ? 'Uploading to Server...' : 'Upload Image Files (JPG/PNG/WEBP)'}</span>
               <input
                 type="file"
                 multiple
@@ -448,12 +448,12 @@ export const AdminProductForm: React.FC = () => {
                 value={newImageUrl}
                 onChange={(e) => setNewImageUrl(e.target.value)}
                 placeholder="Or paste external image URL..."
-                className="flex-1 p-2.5 bg-[#f5f5f7] border border-black/8 rounded-xl text-xs text-[#1d1d1f] focus:outline-none focus:border-[#0071e3]"
+                className="flex-1 min-w-0 p-2.5 bg-[#f5f5f7] border border-black/8 rounded-xl text-xs text-[#1d1d1f] focus:outline-none focus:border-[#0071e3]"
               />
               <button
                 type="button"
                 onClick={addImageUrl}
-                className="py-2.5 px-4 bg-[#1d1d1f] hover:bg-black rounded-xl text-xs font-semibold text-white transition"
+                className="py-2.5 px-4 bg-[#1d1d1f] hover:bg-black rounded-xl text-xs font-semibold text-white transition shrink-0"
               >
                 Add
               </button>
@@ -469,7 +469,7 @@ export const AdminProductForm: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => removeImage(idx)}
-                    className="absolute top-1 right-1 p-1 rounded-full bg-white text-rose-600 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute top-1 right-1 p-1 rounded-full bg-white text-rose-600 shadow-sm opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity"
                     title="Remove"
                   >
                     <Trash2 className="w-3 h-3" />
@@ -486,7 +486,7 @@ export const AdminProductForm: React.FC = () => {
         </div>
 
         {/* Card 4: Specifications */}
-        <div className="p-6 sm:p-8 rounded-3xl bg-white border border-black/8 shadow-apple-card space-y-5">
+        <div className="p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl bg-white border border-black/8 shadow-apple-card space-y-5">
           <div className="flex items-center justify-between border-b border-black/5 pb-2">
             <h2 className="text-xs font-bold uppercase tracking-wider text-[#1d1d1f]">
               4. Technical Specifications
@@ -500,37 +500,40 @@ export const AdminProductForm: React.FC = () => {
             </button>
           </div>
 
-          <div className="space-y-2.5">
+          <div className="space-y-3">
             {specs.map((s, idx) => (
-              <div key={idx} className="flex items-center gap-2">
+              <div key={idx} className="flex flex-col sm:flex-row sm:items-center gap-2 p-2.5 sm:p-0 rounded-xl sm:rounded-none bg-[#fbfbfd] sm:bg-transparent border sm:border-0 border-black/5">
                 <input
                   type="text"
                   value={s.key}
                   onChange={(e) => handleSpecChange(idx, 'key', e.target.value)}
                   placeholder="Field (e.g. VRAM, Socket, TDP)"
-                  className="w-1/3 p-2 bg-[#f5f5f7] border border-black/8 rounded-xl text-xs text-[#1d1d1f] font-semibold focus:outline-none focus:border-[#0071e3]"
+                  className="w-full sm:w-1/3 p-2 bg-[#f5f5f7] border border-black/8 rounded-xl text-xs text-[#1d1d1f] font-semibold focus:outline-none focus:border-[#0071e3]"
                 />
-                <input
-                  type="text"
-                  value={s.value}
-                  onChange={(e) => handleSpecChange(idx, 'value', e.target.value)}
-                  placeholder="Value (e.g. 12GB GDDR6, AM4, 65W)"
-                  className="flex-1 p-2 bg-[#f5f5f7] border border-black/8 rounded-xl text-xs text-[#1d1d1f] focus:outline-none focus:border-[#0071e3]"
-                />
-                <button
-                  type="button"
-                  onClick={() => removeSpecRow(idx)}
-                  className="p-2 rounded-full text-[#86868b] hover:text-rose-600 transition-colors"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+                <div className="flex items-center gap-2 flex-1 w-full">
+                  <input
+                    type="text"
+                    value={s.value}
+                    onChange={(e) => handleSpecChange(idx, 'value', e.target.value)}
+                    placeholder="Value (e.g. 12GB GDDR6, AM4, 65W)"
+                    className="flex-1 min-w-0 p-2 bg-[#f5f5f7] border border-black/8 rounded-xl text-xs text-[#1d1d1f] focus:outline-none focus:border-[#0071e3]"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removeSpecRow(idx)}
+                    className="p-2 rounded-full text-[#86868b] hover:text-rose-600 transition-colors shrink-0"
+                    title="Remove spec"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             ))}
           </div>
         </div>
 
         {/* Card 5: Description */}
-        <div className="p-6 sm:p-8 rounded-3xl bg-white border border-black/8 shadow-apple-card space-y-3">
+        <div className="p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl bg-white border border-black/8 shadow-apple-card space-y-3">
           <h2 className="text-xs font-bold uppercase tracking-wider text-[#1d1d1f]">
             5. Condition Notes & Benchmark Stress Report
           </h2>
@@ -544,17 +547,17 @@ export const AdminProductForm: React.FC = () => {
         </div>
 
         {/* Submit Buttons */}
-        <div className="flex items-center justify-end gap-3 pt-4">
+        <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-end gap-3 pt-4">
           <Link
             to="/admin/products"
-            className="px-6 py-2.5 rounded-full bg-[#f5f5f7] hover:bg-[#e5e5ea] text-[#1d1d1f] font-semibold text-xs transition"
+            className="w-full sm:w-auto text-center px-6 py-2.5 rounded-full bg-[#f5f5f7] hover:bg-[#e5e5ea] text-[#1d1d1f] font-semibold text-xs transition"
           >
             Cancel
           </Link>
           <button
             type="submit"
             disabled={loading}
-            className="px-8 py-2.5 rounded-full btn-apple-primary text-xs font-semibold shadow-xs disabled:opacity-50"
+            className="w-full sm:w-auto text-center px-8 py-2.5 rounded-full btn-apple-primary text-xs font-semibold shadow-xs disabled:opacity-50"
           >
             {loading ? 'Saving...' : isEdit ? 'Update Product' : 'Create Inventory Item'}
           </button>

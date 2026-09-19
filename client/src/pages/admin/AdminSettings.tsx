@@ -180,10 +180,10 @@ export const AdminSettings: React.FC = () => {
         </div>
       )}
 
-      <form onSubmit={handleSaveSettings} className="space-y-8">
+      <form onSubmit={handleSaveSettings} className="space-y-6 sm:space-y-8">
         
         {/* Section 1: Business Identity */}
-        <div className="p-6 sm:p-8 rounded-3xl bg-white border border-black/8 shadow-apple-card space-y-5">
+        <div className="p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl bg-white border border-black/8 shadow-apple-card space-y-5">
           <h2 className="text-xs font-bold uppercase tracking-wider text-[#1d1d1f] flex items-center gap-2 border-b border-black/5 pb-2">
             <Store className="w-4 h-4 text-[#0071e3]" /> Business Identity
           </h2>
@@ -222,7 +222,7 @@ export const AdminSettings: React.FC = () => {
         </div>
 
         {/* Section 2: Contact & Enquiries */}
-        <div className="p-6 sm:p-8 rounded-3xl bg-white border border-black/8 shadow-apple-card space-y-5">
+        <div className="p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl bg-white border border-black/8 shadow-apple-card space-y-5">
           <h2 className="text-xs font-bold uppercase tracking-wider text-[#1d1d1f] flex items-center gap-2 border-b border-black/5 pb-2">
             <Phone className="w-4 h-4 text-emerald-600" /> Contact & WhatsApp Configuration
           </h2>
@@ -283,13 +283,13 @@ export const AdminSettings: React.FC = () => {
         </div>
 
         {/* Section 3: Trust Value Strip */}
-        <div className="p-6 sm:p-8 rounded-3xl bg-white border border-black/8 shadow-apple-card space-y-5">
+        <div className="p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl bg-white border border-black/8 shadow-apple-card space-y-5">
           <h2 className="text-xs font-bold uppercase tracking-wider text-[#1d1d1f] flex items-center gap-2 border-b border-black/5 pb-2">
             <ShieldCheck className="w-4 h-4 text-[#0071e3]" /> Homepage Trust Cards
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2 p-4 rounded-2xl bg-[#fbfbfd] border border-black/5">
+            <div className="space-y-2 p-3.5 sm:p-4 rounded-2xl bg-[#fbfbfd] border border-black/5">
               <label className="text-[11px] font-bold text-[#0071e3] uppercase">Card 1 Title & Description</label>
               <input
                 type="text"
@@ -305,7 +305,7 @@ export const AdminSettings: React.FC = () => {
               />
             </div>
 
-            <div className="space-y-2 p-4 rounded-2xl bg-[#fbfbfd] border border-black/5">
+            <div className="space-y-2 p-3.5 sm:p-4 rounded-2xl bg-[#fbfbfd] border border-black/5">
               <label className="text-[11px] font-bold text-emerald-700 uppercase">Card 2 Title & Description</label>
               <input
                 type="text"
@@ -326,7 +326,7 @@ export const AdminSettings: React.FC = () => {
         <button
           type="submit"
           disabled={saving}
-          className="px-8 py-3 rounded-full btn-apple-primary text-xs font-semibold flex items-center gap-2 shadow-xs disabled:opacity-50"
+          className="w-full sm:w-auto px-8 py-3 rounded-full btn-apple-primary text-xs font-semibold flex items-center justify-center gap-2 shadow-xs disabled:opacity-50"
         >
           <Save className="w-4 h-4" />
           <span>{saving ? 'Saving...' : 'Save All Settings'}</span>
@@ -345,16 +345,16 @@ export const AdminSettings: React.FC = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           
           {/* Card 1: Change Username */}
-          <div className="p-6 sm:p-7 rounded-3xl bg-white border border-black/8 shadow-apple-card space-y-4">
-            <div className="flex items-center justify-between border-b border-black/5 pb-3">
+          <div className="p-4 sm:p-6 md:p-7 rounded-2xl sm:rounded-3xl bg-white border border-black/8 shadow-apple-card space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-black/5 pb-3">
               <div className="flex items-center gap-2">
                 <User className="w-4 h-4 text-[#0071e3]" />
                 <h3 className="text-xs font-bold uppercase tracking-wider text-[#1d1d1f]">Change Username</h3>
               </div>
-              <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-[#f0f6ff] text-[#0071e3] font-semibold font-mono">
+              <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-[#f0f6ff] text-[#0071e3] font-semibold font-mono truncate max-w-full">
                 Current: {currentAdminUsername || 'Loading...'}
               </span>
             </div>
@@ -382,13 +382,13 @@ export const AdminSettings: React.FC = () => {
                   minLength={3}
                   value={newUsername}
                   onChange={(e) => setNewUsername(e.target.value)}
-                  placeholder="e.g. store_admin, manager"
+                  placeholder="e.g. store_admin"
                   className="w-full p-2.5 bg-[#f5f5f7] border border-black/8 rounded-xl text-xs text-[#1d1d1f] focus:outline-none focus:border-[#0071e3]"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[#6e6e73]">Current Password (to confirm identity)</label>
+                <label className="text-xs font-semibold text-[#6e6e73]">Current Password (for authorization)</label>
                 <input
                   type="password"
                   required
@@ -402,7 +402,7 @@ export const AdminSettings: React.FC = () => {
               <button
                 type="submit"
                 disabled={changingUn}
-                className="py-2.5 px-6 rounded-full bg-[#0071e3] hover:bg-[#0077ed] text-white font-semibold text-xs transition shadow-xs disabled:opacity-50 flex items-center gap-1.5"
+                className="w-full sm:w-auto py-2.5 px-6 rounded-full bg-[#1d1d1f] hover:bg-black text-white font-semibold text-xs transition shadow-xs disabled:opacity-50 flex items-center justify-center gap-1.5"
               >
                 <span>{changingUn ? 'Updating...' : 'Update Username'}</span>
               </button>
@@ -410,7 +410,7 @@ export const AdminSettings: React.FC = () => {
           </div>
 
           {/* Card 2: Change Password */}
-          <div className="p-6 sm:p-7 rounded-3xl bg-white border border-black/8 shadow-apple-card space-y-4">
+          <div className="p-4 sm:p-6 md:p-7 rounded-2xl sm:rounded-3xl bg-white border border-black/8 shadow-apple-card space-y-4">
             <div className="flex items-center gap-2 border-b border-black/5 pb-3">
               <KeyRound className="w-4 h-4 text-amber-600" />
               <h3 className="text-xs font-bold uppercase tracking-wider text-[#1d1d1f]">Change Password</h3>
@@ -459,7 +459,7 @@ export const AdminSettings: React.FC = () => {
               <button
                 type="submit"
                 disabled={changingPw}
-                className="py-2.5 px-6 rounded-full bg-[#1d1d1f] hover:bg-black text-white font-semibold text-xs transition shadow-xs disabled:opacity-50 flex items-center gap-1.5"
+                className="w-full sm:w-auto py-2.5 px-6 rounded-full bg-[#1d1d1f] hover:bg-black text-white font-semibold text-xs transition shadow-xs disabled:opacity-50 flex items-center justify-center gap-1.5"
               >
                 <span>{changingPw ? 'Updating...' : 'Update Password'}</span>
               </button>
@@ -470,10 +470,10 @@ export const AdminSettings: React.FC = () => {
       </div>
 
       {/* Section 5: Database Connectivity & System Health */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-white border border-black/8 shadow-apple-card space-y-5">
-        <div className="flex items-center justify-between border-b border-black/5 pb-3">
+      <div className="p-4 sm:p-6 md:p-8 rounded-2xl sm:rounded-3xl bg-white border border-black/8 shadow-apple-card space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-black/5 pb-3">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-[#f0f6ff] text-[#0071e3] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-[#f0f6ff] text-[#0071e3] flex items-center justify-center shrink-0">
               <Database className="w-4 h-4" />
             </div>
             <div>
@@ -485,7 +485,7 @@ export const AdminSettings: React.FC = () => {
             type="button"
             onClick={handleRefreshDb}
             disabled={refreshingDb}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#f5f5f7] hover:bg-[#e5e5ea] text-xs font-semibold text-[#1d1d1f] transition disabled:opacity-50"
+            className="self-start sm:self-auto flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#f5f5f7] hover:bg-[#e5e5ea] text-xs font-semibold text-[#1d1d1f] transition disabled:opacity-50 shrink-0"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${refreshingDb ? 'animate-spin' : ''}`} />
             <span>{refreshingDb ? 'Checking...' : 'Check Database Status'}</span>
@@ -493,9 +493,9 @@ export const AdminSettings: React.FC = () => {
         </div>
 
         {dbStatus ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
             {/* Status & Integrity */}
-            <div className="p-4 rounded-2xl bg-[#f0fdf4] border border-emerald-200 space-y-1">
+            <div className="p-3.5 sm:p-4 rounded-2xl bg-[#f0fdf4] border border-emerald-200 space-y-1">
               <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">Database Status</span>
               <div className="flex items-center gap-2">
                 <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -505,26 +505,26 @@ export const AdminSettings: React.FC = () => {
             </div>
 
             {/* Active Admin User */}
-            <div className="p-4 rounded-2xl bg-[#fbfbfd] border border-black/8 space-y-1">
+            <div className="p-3.5 sm:p-4 rounded-2xl bg-[#fbfbfd] border border-black/8 space-y-1">
               <span className="text-[10px] font-bold uppercase tracking-wider text-[#86868b]">Database Admin User</span>
               <div className="flex items-center gap-1.5">
                 <User className="w-3.5 h-3.5 text-[#0071e3]" />
-                <span className="font-mono font-bold text-sm text-[#1d1d1f]">{dbStatus.currentAdmin?.username || currentAdminUsername || 'None'}</span>
+                <span className="font-mono font-bold text-sm text-[#1d1d1f] truncate">{dbStatus.currentAdmin?.username || currentAdminUsername || 'None'}</span>
               </div>
               <p className="text-[11px] text-[#86868b]">Saved directly in admins table</p>
             </div>
 
             {/* Catalog Counts */}
-            <div className="p-4 rounded-2xl bg-[#fbfbfd] border border-black/8 space-y-1">
+            <div className="p-3.5 sm:p-4 rounded-2xl bg-[#fbfbfd] border border-black/8 space-y-1">
               <span className="text-[10px] font-bold uppercase tracking-wider text-[#86868b]">Inventory Records</span>
-              <div className="font-bold text-sm text-[#1d1d1f]">
+              <div className="font-bold text-sm text-[#1d1d1f] truncate">
                 {dbStatus.counts.products} Products / {dbStatus.counts.categories} Categories
               </div>
               <p className="text-[11px] text-[#86868b]">{dbStatus.counts.combos} Combos Saved</p>
             </div>
 
             {/* Engine & File */}
-            <div className="p-4 rounded-2xl bg-[#fbfbfd] border border-black/8 space-y-1">
+            <div className="p-3.5 sm:p-4 rounded-2xl bg-[#fbfbfd] border border-black/8 space-y-1">
               <span className="text-[10px] font-bold uppercase tracking-wider text-[#86868b]">Engine & Storage</span>
               <div className="font-bold text-xs text-[#1d1d1f] flex items-center gap-1.5">
                 <HardDrive className="w-3.5 h-3.5 text-amber-600 shrink-0" />

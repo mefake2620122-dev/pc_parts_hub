@@ -115,7 +115,7 @@ export const AdminCombos: React.FC = () => {
     <div className="space-y-6 max-w-5xl">
       
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1d1d1f] tracking-tight">PC Builds & Combos</h1>
           <p className="text-xs text-[#86868b] mt-0.5">
@@ -124,12 +124,13 @@ export const AdminCombos: React.FC = () => {
         </div>
         <button
           onClick={openAdd}
-          className="px-4 py-2 rounded-full btn-apple-primary text-xs font-semibold flex items-center gap-1.5 shadow-xs"
+          className="self-start sm:self-auto px-4 py-2 rounded-full btn-apple-primary text-xs font-semibold flex items-center gap-1.5 shadow-xs"
         >
           <Plus className="w-3.5 h-3.5" />
           <span>Create Combo</span>
         </button>
       </div>
+
 
       {error && (
         <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
@@ -146,9 +147,9 @@ export const AdminCombos: React.FC = () => {
       )}
 
       {/* Combos Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         {combos.map((combo) => (
-          <div key={combo.id} className="p-6 rounded-3xl bg-white border border-black/8 shadow-apple-card space-y-4 flex flex-col justify-between">
+          <div key={combo.id} className="p-4 sm:p-6 rounded-2xl sm:rounded-3xl bg-white border border-black/8 shadow-apple-card space-y-4 flex flex-col justify-between">
             <div className="space-y-3">
               <div className="flex items-baseline justify-between">
                 <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#f0f6ff] text-[#0071e3] font-semibold">
@@ -199,11 +200,12 @@ export const AdminCombos: React.FC = () => {
 
       {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="max-w-lg w-full rounded-3xl bg-white p-6 sm:p-8 border border-black/8 shadow-apple-floating space-y-4 max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4">
+          <div className="max-w-lg w-full rounded-2xl sm:rounded-3xl bg-white p-5 sm:p-8 border border-black/8 shadow-apple-floating space-y-4 max-h-[90vh] overflow-y-auto">
             <h3 className="text-lg font-bold text-[#1d1d1f]">
               {editingId ? 'Edit Combo Bundle' : 'Create New Combo'}
             </h3>
+
             
             <form onSubmit={handleSave} className="space-y-4">
               <div className="space-y-1.5">

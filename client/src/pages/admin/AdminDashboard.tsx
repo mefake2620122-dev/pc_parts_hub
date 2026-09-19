@@ -94,28 +94,28 @@ export const AdminDashboard: React.FC = () => {
       </div>
 
       {/* Metrics Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3.5">
         {statCards.map((c, i) => {
           const Icon = c.icon;
           return (
-            <div key={i} className="p-4 rounded-2xl bg-white border border-black/8 shadow-apple-card space-y-2">
+            <div key={i} className="p-3 sm:p-4 rounded-2xl bg-white border border-black/8 shadow-apple-card space-y-1.5 sm:space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-semibold text-[#86868b] truncate">{c.label}</span>
-                <div className={`w-6 h-6 rounded-full ${c.bg} flex items-center justify-center ${c.color}`}>
-                  <Icon className="w-3.5 h-3.5" />
+                <span className="text-[10px] sm:text-[11px] font-semibold text-[#86868b] truncate">{c.label}</span>
+                <div className={`w-6 h-6 rounded-full ${c.bg} flex items-center justify-center ${c.color} shrink-0`}>
+                  <Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                 </div>
               </div>
-              <p className="text-2xl font-bold text-[#1d1d1f] tracking-tight">{c.value}</p>
+              <p className="text-xl sm:text-2xl font-bold text-[#1d1d1f] tracking-tight">{c.value}</p>
             </div>
           );
         })}
       </div>
 
       {/* Two Columns: Recent Inventory & Recent Enquiries */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
         
         {/* Recent Products (2 cols) */}
-        <div className="lg:col-span-2 rounded-3xl bg-white p-6 border border-black/8 shadow-apple-card space-y-4">
+        <div className="lg:col-span-2 rounded-2xl sm:rounded-3xl bg-white p-4 sm:p-6 border border-black/8 shadow-apple-card space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-xs font-bold uppercase tracking-wider text-[#1d1d1f]">Recent Inventory Items</h2>
             <Link to="/admin/products" className="text-xs text-[#0071e3] hover:text-[#0077ed] font-medium flex items-center gap-1">
@@ -124,8 +124,8 @@ export const AdminDashboard: React.FC = () => {
             </Link>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs text-left">
+          <div className="overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0">
+            <table className="w-full min-w-[560px] text-xs text-left">
               <thead>
                 <tr className="text-[#86868b] border-b border-black/5 uppercase font-mono text-[10px]">
                   <th className="py-2.5 px-3">Code</th>
@@ -138,13 +138,13 @@ export const AdminDashboard: React.FC = () => {
               <tbody className="divide-y divide-black/5">
                 {data?.recentProducts?.map((p: any) => (
                   <tr key={p.id} className="hover:bg-[#fafafc] transition-colors">
-                    <td className="py-2.5 px-3 font-mono text-[#86868b]">{p.product_code}</td>
-                    <td className="py-2.5 px-3 font-semibold text-[#1d1d1f] max-w-[200px] truncate">{p.name}</td>
-                    <td className="py-2.5 px-3 font-semibold text-[#1d1d1f]">{formatPrice(p.price)}</td>
-                    <td className="py-2.5 px-3">
+                    <td className="py-2.5 px-3 font-mono text-[#86868b] whitespace-nowrap">{p.product_code}</td>
+                    <td className="py-2.5 px-3 font-semibold text-[#1d1d1f] max-w-[180px] truncate">{p.name}</td>
+                    <td className="py-2.5 px-3 font-semibold text-[#1d1d1f] whitespace-nowrap">{formatPrice(p.price)}</td>
+                    <td className="py-2.5 px-3 whitespace-nowrap">
                       <button
                         onClick={() => handleQuickStockToggle(p.id, p.stock_status)}
-                        className={`text-[10px] px-2.5 py-0.5 rounded-full font-semibold uppercase tracking-wider transition ${
+                        className={`text-[10px] px-2.5 py-1 rounded-full font-semibold uppercase tracking-wider transition ${
                           p.stock_status === 'IN_STOCK'
                             ? 'bg-[#f0fdf4] text-emerald-800 border border-emerald-200'
                             : 'bg-[#f5f5f7] text-[#86868b] border border-black/10'
@@ -154,10 +154,10 @@ export const AdminDashboard: React.FC = () => {
                         {p.stock_status === 'IN_STOCK' ? 'In Stock' : 'Sold Out'}
                       </button>
                     </td>
-                    <td className="py-2.5 px-3 text-right">
+                    <td className="py-2.5 px-3 text-right whitespace-nowrap">
                       <Link
                         to={`/admin/products/${p.id}/edit`}
-                        className="text-[#0071e3] hover:text-[#0077ed] font-medium"
+                        className="text-[#0071e3] hover:text-[#0077ed] font-medium px-2 py-1"
                       >
                         Edit
                       </Link>
@@ -170,8 +170,9 @@ export const AdminDashboard: React.FC = () => {
         </div>
 
         {/* Recent Enquiries Activity Log (1 col) */}
-        <div className="rounded-3xl bg-white p-6 border border-black/8 shadow-apple-card space-y-4">
+        <div className="rounded-2xl sm:rounded-3xl bg-white p-4 sm:p-6 border border-black/8 shadow-apple-card space-y-4">
           <h2 className="text-xs font-bold uppercase tracking-wider text-[#1d1d1f]">Recent Customer Enquiries</h2>
+
           
           <div className="space-y-2.5">
             {data?.recentEnquiries?.length > 0 ? (

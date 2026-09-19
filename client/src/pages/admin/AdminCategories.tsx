@@ -83,7 +83,7 @@ export const AdminCategories: React.FC = () => {
     <div className="space-y-6 max-w-5xl">
       
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1d1d1f] tracking-tight">Hardware Categories</h1>
           <p className="text-xs text-[#86868b] mt-0.5">
@@ -92,7 +92,7 @@ export const AdminCategories: React.FC = () => {
         </div>
         <button
           onClick={openAdd}
-          className="px-4 py-2 rounded-full btn-apple-primary text-xs font-semibold flex items-center gap-1.5 shadow-xs"
+          className="self-start sm:self-auto px-4 py-2 rounded-full btn-apple-primary text-xs font-semibold flex items-center gap-1.5 shadow-xs"
         >
           <Plus className="w-3.5 h-3.5" />
           <span>Add Category</span>
@@ -114,53 +114,56 @@ export const AdminCategories: React.FC = () => {
       )}
 
       {/* Categories Table */}
-      <div className="rounded-3xl bg-white border border-black/8 overflow-hidden shadow-apple-card">
-        <table className="w-full text-xs text-left">
-          <thead>
-            <tr className="border-b border-black/5 bg-[#f5f5f7] uppercase font-mono text-[10px] text-[#86868b]">
-              <th className="py-3 px-4">Order</th>
-              <th className="py-3 px-4">Name</th>
-              <th className="py-3 px-4">Slug</th>
-              <th className="py-3 px-4">Description</th>
-              <th className="py-3 px-4">Inventory Count</th>
-              <th className="py-3 px-4 text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-black/5">
-            {categories.map((cat) => (
-              <tr key={cat.id} className="hover:bg-[#fafafc] transition-colors">
-                <td className="py-3 px-4 font-mono text-[#86868b]">{cat.sort_order}</td>
-                <td className="py-3 px-4 font-semibold text-[#1d1d1f]">{cat.name}</td>
-                <td className="py-3 px-4 font-mono text-[#0071e3]">{cat.slug}</td>
-                <td className="py-3 px-4 text-[#86868b] max-w-xs truncate">{cat.description || '—'}</td>
-                <td className="py-3 px-4">
-                  <span className="px-2.5 py-0.5 rounded-full bg-[#f5f5f7] text-[#1d1d1f] font-mono text-[11px] font-semibold">
-                    {cat.total_products || 0} parts ({cat.in_stock_count || 0} in stock)
-                  </span>
-                </td>
-                <td className="py-3 px-4 text-right">
-                  <div className="flex items-center justify-end gap-1">
-                    <button
-                      onClick={() => openEdit(cat)}
-                      className="p-1.5 rounded-full hover:bg-[#f5f5f7] text-[#86868b] hover:text-[#1d1d1f] transition"
-                      title="Edit"
-                    >
-                      <Edit className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(cat)}
-                      className="p-1.5 rounded-full hover:bg-rose-50 text-[#86868b] hover:text-rose-600 transition"
-                      title="Delete"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </td>
+      <div className="rounded-2xl sm:rounded-3xl bg-white border border-black/8 overflow-hidden shadow-apple-card">
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[620px] text-xs text-left">
+            <thead>
+              <tr className="border-b border-black/5 bg-[#f5f5f7] uppercase font-mono text-[10px] text-[#86868b]">
+                <th className="py-3 px-4">Order</th>
+                <th className="py-3 px-4">Name</th>
+                <th className="py-3 px-4">Slug</th>
+                <th className="py-3 px-4">Description</th>
+                <th className="py-3 px-4">Inventory Count</th>
+                <th className="py-3 px-4 text-right">Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="divide-y divide-black/5">
+              {categories.map((cat) => (
+                <tr key={cat.id} className="hover:bg-[#fafafc] transition-colors">
+                  <td className="py-3 px-4 font-mono text-[#86868b] whitespace-nowrap">{cat.sort_order}</td>
+                  <td className="py-3 px-4 font-semibold text-[#1d1d1f] whitespace-nowrap">{cat.name}</td>
+                  <td className="py-3 px-4 font-mono text-[#0071e3] whitespace-nowrap">{cat.slug}</td>
+                  <td className="py-3 px-4 text-[#86868b] max-w-xs truncate">{cat.description || '—'}</td>
+                  <td className="py-3 px-4 whitespace-nowrap">
+                    <span className="px-2.5 py-0.5 rounded-full bg-[#f5f5f7] text-[#1d1d1f] font-mono text-[11px] font-semibold">
+                      {cat.total_products || 0} parts ({cat.in_stock_count || 0} in stock)
+                    </span>
+                  </td>
+                  <td className="py-3 px-4 text-right whitespace-nowrap">
+                    <div className="flex items-center justify-end gap-1">
+                      <button
+                        onClick={() => openEdit(cat)}
+                        className="p-1.5 rounded-full hover:bg-[#f5f5f7] text-[#86868b] hover:text-[#1d1d1f] transition"
+                        title="Edit"
+                      >
+                        <Edit className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(cat)}
+                        className="p-1.5 rounded-full hover:bg-rose-50 text-[#86868b] hover:text-rose-600 transition"
+                        title="Delete"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
+
 
       {/* Add / Edit Modal */}
       {showModal && (

@@ -124,7 +124,7 @@ export const AdminProducts: React.FC = () => {
       </div>
 
       {/* Filter & Search Bar */}
-      <div className="bg-white p-3 rounded-2xl border border-black/8 shadow-apple-card flex flex-col md:flex-row items-center gap-3">
+      <div className="bg-white p-3 sm:p-4 rounded-2xl border border-black/8 shadow-apple-card flex flex-col md:flex-row items-stretch md:items-center gap-3">
         <div className="relative flex-1 w-full">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#86868b]" />
           <input
@@ -136,7 +136,7 @@ export const AdminProducts: React.FC = () => {
           />
         </div>
 
-        <div className="flex items-center gap-2 w-full md:w-auto">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full md:w-auto">
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
@@ -162,9 +162,9 @@ export const AdminProducts: React.FC = () => {
       </div>
 
       {/* Products Table */}
-      <div className="rounded-3xl bg-white border border-black/8 overflow-hidden shadow-apple-card">
+      <div className="rounded-2xl sm:rounded-3xl bg-white border border-black/8 overflow-hidden shadow-apple-card">
         <div className="overflow-x-auto">
-          <table className="w-full text-xs text-left">
+          <table className="w-full min-w-[760px] text-xs text-left">
             <thead>
               <tr className="border-b border-black/5 bg-[#f5f5f7] uppercase font-mono text-[10px] text-[#86868b]">
                 <th className="py-3 px-4">Image</th>
@@ -188,7 +188,7 @@ export const AdminProducts: React.FC = () => {
                 products.map((p) => (
                   <tr key={p.id} className="hover:bg-[#fafafc] transition-colors">
                     {/* Thumbnail */}
-                    <td className="py-2.5 px-4">
+                    <td className="py-2.5 px-4 whitespace-nowrap">
                       <div className="w-12 h-9 rounded-lg overflow-hidden bg-[#fbfbfd] border border-black/5 shrink-0 flex items-center justify-center p-0.5">
                         <img
                           src={p.primary_image || 'https://placehold.co/100x100/f5f5f7/1d1d1f?text=PC'}
@@ -199,37 +199,37 @@ export const AdminProducts: React.FC = () => {
                     </td>
 
                     {/* Code */}
-                    <td className="py-2.5 px-4 font-mono text-[#86868b] font-medium">
+                    <td className="py-2.5 px-4 font-mono text-[#86868b] font-medium whitespace-nowrap">
                       {p.product_code}
                     </td>
 
                     {/* Name */}
-                    <td className="py-2.5 px-4 max-w-xs truncate font-semibold text-[#1d1d1f]">
-                      <Link to={`/parts/${p.slug}`} target="_blank" className="hover:text-[#0071e3] flex items-center gap-1 transition">
-                        <span>{p.name}</span>
+                    <td className="py-2.5 px-4 max-w-xs font-semibold text-[#1d1d1f]">
+                      <Link to={`/parts/${p.slug}`} target="_blank" className="hover:text-[#0071e3] inline-flex items-center gap-1 transition">
+                        <span className="truncate max-w-[200px]">{p.name}</span>
                         <ExternalLink className="w-3 h-3 opacity-40 shrink-0" />
                       </Link>
                     </td>
 
                     {/* Category */}
-                    <td className="py-2.5 px-4 text-[#86868b]">
+                    <td className="py-2.5 px-4 text-[#86868b] whitespace-nowrap">
                       {p.category_name}
                     </td>
 
                     {/* Condition */}
-                    <td className="py-2.5 px-4">
+                    <td className="py-2.5 px-4 whitespace-nowrap">
                       <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#f5f5f7] border border-black/5 text-[#424245]">
                         {p.condition}
                       </span>
                     </td>
 
                     {/* Price */}
-                    <td className="py-2.5 px-4 font-bold text-[#1d1d1f]">
+                    <td className="py-2.5 px-4 font-bold text-[#1d1d1f] whitespace-nowrap">
                       {formatPrice(p.price)}
                     </td>
 
                     {/* Stock Status Selector */}
-                    <td className="py-2.5 px-4">
+                    <td className="py-2.5 px-4 whitespace-nowrap">
                       <select
                         value={p.stock_status}
                         onChange={(e) => handleStockChange(p.id, e.target.value)}
@@ -248,7 +248,7 @@ export const AdminProducts: React.FC = () => {
                     </td>
 
                     {/* Actions */}
-                    <td className="py-2.5 px-4 text-right">
+                    <td className="py-2.5 px-4 text-right whitespace-nowrap">
                       <div className="flex items-center justify-end gap-1">
                         <Link
                           to={`/admin/products/${p.id}/edit`}
@@ -286,6 +286,7 @@ export const AdminProducts: React.FC = () => {
           </table>
         </div>
       </div>
+
 
     </div>
   );

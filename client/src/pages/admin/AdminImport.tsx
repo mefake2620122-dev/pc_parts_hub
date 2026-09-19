@@ -103,8 +103,8 @@ export const AdminImport: React.FC = () => {
       )}
 
       {/* Upload Box */}
-      <div className="rounded-3xl bg-white p-6 sm:p-8 border border-black/8 shadow-apple-card space-y-5">
-        <div className="flex items-center justify-between border-b border-black/5 pb-3">
+      <div className="rounded-2xl sm:rounded-3xl bg-white p-4 sm:p-6 md:p-8 border border-black/8 shadow-apple-card space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-black/5 pb-3">
           <span className="text-xs font-bold uppercase tracking-wider text-[#1d1d1f]">
             1. Select File or Paste Content
           </span>
@@ -138,7 +138,7 @@ export const AdminImport: React.FC = () => {
         <button
           onClick={handlePreview}
           disabled={loading || !csvText.trim()}
-          className="px-6 py-2.5 rounded-full btn-apple-primary text-xs font-semibold disabled:opacity-40 transition shadow-xs"
+          className="w-full sm:w-auto px-6 py-2.5 rounded-full btn-apple-primary text-xs font-semibold disabled:opacity-40 transition shadow-xs"
         >
           {loading ? 'Validating CSV...' : 'Preview Rows'}
         </button>
@@ -146,8 +146,8 @@ export const AdminImport: React.FC = () => {
 
       {/* Validation Preview Card */}
       {previewData && (
-        <div className="rounded-3xl bg-white p-6 sm:p-8 border border-black/8 shadow-apple-card space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-black/5 pb-3">
+        <div className="rounded-2xl sm:rounded-3xl bg-white p-4 sm:p-6 md:p-8 border border-black/8 shadow-apple-card space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-black/5 pb-3">
             <div>
               <h3 className="text-sm font-bold uppercase tracking-wider text-[#1d1d1f]">
                 2. Validation Results
@@ -161,7 +161,7 @@ export const AdminImport: React.FC = () => {
               <button
                 onClick={handleConfirmImport}
                 disabled={importing}
-                className="px-6 py-2.5 rounded-full btn-apple-primary text-xs font-semibold flex items-center gap-1.5 shadow-xs disabled:opacity-50"
+                className="w-full sm:w-auto px-6 py-2.5 rounded-full btn-apple-primary text-xs font-semibold flex items-center justify-center gap-1.5 shadow-xs disabled:opacity-50"
               >
                 <span>{importing ? 'Importing...' : `Import ${previewData.validRows.length} Valid Products`}</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -174,7 +174,7 @@ export const AdminImport: React.FC = () => {
             <div className="space-y-2">
               <span className="text-xs font-semibold text-emerald-700">Valid Rows Preview:</span>
               <div className="overflow-x-auto rounded-2xl border border-black/8">
-                <table className="w-full text-xs text-left">
+                <table className="w-full min-w-[500px] text-xs text-left">
                   <thead className="bg-[#f5f5f7] text-[#86868b] uppercase font-mono text-[10px]">
                     <tr>
                       <th className="p-2.5">Name</th>
@@ -187,11 +187,11 @@ export const AdminImport: React.FC = () => {
                   <tbody className="divide-y divide-black/5">
                     {previewData.validRows.slice(0, 5).map((row: any, i: number) => (
                       <tr key={i} className="hover:bg-[#fafafc]">
-                        <td className="p-2.5 font-semibold text-[#1d1d1f] truncate max-w-xs">{row.name}</td>
-                        <td className="p-2.5 text-[#86868b]">{row.category}</td>
-                        <td className="p-2.5 text-[#86868b]">{row.brand}</td>
-                        <td className="p-2.5 font-semibold text-[#1d1d1f]">{formatPrice(row.price)}</td>
-                        <td className="p-2.5 text-[#424245]">{row.condition}</td>
+                        <td className="p-2.5 font-semibold text-[#1d1d1f] truncate max-w-xs whitespace-nowrap">{row.name}</td>
+                        <td className="p-2.5 text-[#86868b] whitespace-nowrap">{row.category}</td>
+                        <td className="p-2.5 text-[#86868b] whitespace-nowrap">{row.brand}</td>
+                        <td className="p-2.5 font-semibold text-[#1d1d1f] whitespace-nowrap">{formatPrice(row.price)}</td>
+                        <td className="p-2.5 text-[#424245] whitespace-nowrap">{row.condition}</td>
                       </tr>
                     ))}
                   </tbody>
