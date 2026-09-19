@@ -5,8 +5,8 @@ export function seedDatabase() {
   // 1. Check Admin
   const adminCount = db.prepare('SELECT COUNT(*) as count FROM admins').get() as { count: number };
   if (adminCount.count === 0) {
-    const initialUser = process.env.INITIAL_ADMIN_USERNAME || 'banti123';
-    const initialPass = process.env.INITIAL_ADMIN_PASSWORD || 'admin123';
+    const initialUser = process.env.INITIAL_ADMIN_USERNAME || 'admin';
+    const initialPass = process.env.INITIAL_ADMIN_PASSWORD || 'pcparthub@2026';
     const hash = bcrypt.hashSync(initialPass, 10);
     db.prepare('INSERT INTO admins (username, password_hash, name) VALUES (?, ?, ?)').run(
       initialUser,

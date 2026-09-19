@@ -382,7 +382,7 @@ export const AdminSettings: React.FC = () => {
                   minLength={3}
                   value={newUsername}
                   onChange={(e) => setNewUsername(e.target.value)}
-                  placeholder="e.g. banti123, store_admin"
+                  placeholder="e.g. store_admin, manager"
                   className="w-full p-2.5 bg-[#f5f5f7] border border-black/8 rounded-xl text-xs text-[#1d1d1f] focus:outline-none focus:border-[#0071e3]"
                 />
               </div>

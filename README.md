@@ -71,10 +71,9 @@ npm run build
 npm start
 ```
 
-Default Admin Account:
-- **Username**: `banti123`
-- **Password**: `admin123`
-- Change your username and password anytime in **Store Settings** (`/admin/settings`).
+Admin Access:
+- Sign in at `/admin/login` using your configured admin credentials.
+- Update your credentials anytime in **Store Settings** (`/admin/settings`) or override via environment variable `ADMIN_PASSWORD`.
 
 ---
 
