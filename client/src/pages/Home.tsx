@@ -21,6 +21,7 @@ import { Product, Category, Combo, SiteSettings } from '../types';
 import { api } from '../services/api';
 import ProductCard from '../components/cards/ProductCard';
 import StatusBadge from '../components/common/StatusBadge';
+import { SEO } from '../components/common/SEO';
 import { getWhatsAppUrl, getDialerUrl, generateGeneralWhatsAppMessage, formatPrice } from '../utils/whatsapp';
 
 interface HomeProps {
