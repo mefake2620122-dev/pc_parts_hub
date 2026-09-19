@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { MessageSquare, ArrowRight, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { Product, SiteSettings } from '../../types';
 import StatusBadge from '../common/StatusBadge';
-import { formatPrice, getWhatsAppUrl, generateProductWhatsAppMessage } from '../../utils/whatsapp';
+import { formatPrice, getWhatsAppUrl, generateProductWhatsAppMessage, openWhatsApp } from '../../utils/whatsapp';
 import { api } from '../../services/api';
 
 interface ProductCardProps {
@@ -21,9 +21,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, settings }) =
     : generateProductWhatsAppMessage(product, businessName);
   const waUrl = getWhatsAppUrl(whatsappNum, waMsg);
 
-  const handleWhatsApp = (e: React.MouseEvent) => {
+  const handleWhatsApp = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
     e.stopPropagation();
     api.trackEnquiry(product.id, product.name, 'WHATSAPP');
+    openWhatsApp(whatsappNum, waMsg);
   };
 
   const imageSrc = product.primary_image || (product.images && product.images[0]?.image_url) || 'https://placehold.co/800x600/f5f5f7/1d1d1f?text=PC+Part';

@@ -3,7 +3,7 @@ import { MessageSquare, CheckCircle2, Cpu, Sparkles, Layers } from 'lucide-react
 import { Combo, SiteSettings } from '../types';
 import { api } from '../services/api';
 import { SEO } from '../components/common/SEO';
-import { formatPrice, getWhatsAppUrl } from '../utils/whatsapp';
+import { formatPrice, getWhatsAppUrl, openWhatsApp } from '../utils/whatsapp';
 
 interface BuildsProps {
   settings?: SiteSettings;
@@ -122,7 +122,7 @@ export const Builds: React.FC<BuildsProps> = ({ settings }) => {
                     whatsappNum,
                     `Hello ${businessName}, I am inquiring about the "${combo.name || combo.title}" combo package priced at ${formatPrice(combo.price)}. Can I inspect it at the store?`
                   )}
-                  onClick={() => api.trackEnquiry(null, combo.name || combo.title, 'WHATSAPP')}
+                  onClick={(e) => { e.preventDefault(); api.trackEnquiry(null, combo.name || combo.title, 'WHATSAPP'); openWhatsApp(whatsappNum, `Hello ${businessName}, I am inquiring about the "${combo.name || combo.title}" combo package priced at ${formatPrice(combo.price)}. Can I inspect it at the store?`); }}
                   className="w-full sm:w-auto px-6 py-2.5 rounded-full btn-whatsapp-apple text-xs font-semibold flex items-center justify-center gap-2 shadow-sm"
                 >
                   <MessageSquare className="w-3.5 h-3.5" />

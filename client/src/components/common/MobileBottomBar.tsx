@@ -1,7 +1,7 @@
 import React from 'react';
 import { MessageSquare, Phone } from 'lucide-react';
 import { SiteSettings } from '../../types';
-import { generateGeneralWhatsAppMessage, getWhatsAppUrl, getDialerUrl } from '../../utils/whatsapp';
+import { generateGeneralWhatsAppMessage, getWhatsAppUrl, getDialerUrl, openWhatsApp } from '../../utils/whatsapp';
 import { api } from '../../services/api';
 
 interface MobileBottomBarProps {
@@ -13,11 +13,13 @@ export const MobileBottomBar: React.FC<MobileBottomBarProps> = ({ settings }) =>
   const phoneNum = settings?.phone || '+919179527017';
   const businessName = settings?.business_name || 'PC PART HUB';
 
-  const waUrl = getWhatsAppUrl(whatsappNum, generateGeneralWhatsAppMessage(businessName));
+  const waFallbackUrl = getWhatsAppUrl(whatsappNum, generateGeneralWhatsAppMessage(businessName));
   const callUrl = getDialerUrl(phoneNum);
 
-  const handleWhatsAppClick = () => {
+  const handleWhatsAppClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
     api.trackEnquiry(null, 'Mobile Bottom Bar', 'WHATSAPP');
+    openWhatsApp(whatsappNum, generateGeneralWhatsAppMessage(businessName));
   };
 
   const handleCallClick = () => {
@@ -39,7 +41,7 @@ export const MobileBottomBar: React.FC<MobileBottomBarProps> = ({ settings }) =>
 
         {/* WhatsApp Button */}
         <a
-          href={waUrl}
+          href={waFallbackUrl}
           rel="noopener noreferrer"
           onClick={handleWhatsAppClick}
           className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-full btn-whatsapp-apple text-white font-semibold text-xs tracking-wide transition active:scale-95 shadow-sm"
@@ -53,4 +55,3 @@ export const MobileBottomBar: React.FC<MobileBottomBarProps> = ({ settings }) =>
 };
 
 export default MobileBottomBar;
-

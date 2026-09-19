@@ -22,7 +22,6 @@ export function generateGeneralWhatsAppMessage(businessName = 'PC Part Hub'): st
 export function normalizeWhatsAppNumber(phone: string): string {
   let clean = (phone || '').replace(/[^0-9]/g, '');
   if (!clean) return '919179527017';
-  // If 10 digits (e.g. Indian mobile number without country code), prepend 91
   if (clean.length === 10) {
     clean = '91' + clean;
   } else if (clean.length === 11 && clean.startsWith('0')) {
@@ -47,10 +46,10 @@ export function normalizeDialerNumber(phone: string): string {
   return clean;
 }
 
+/** Returns the wa.me universal link — used as the <a href> fallback for SEO & non-JS contexts */
 export function getWhatsAppUrl(phone: string, message: string): string {
   const cleanPhone = normalizeWhatsAppNumber(phone);
   const encodedMsg = encodeURIComponent(message);
-  // Official WhatsApp universal link (wa.me) - natively intercepted by iOS Safari and Android Chrome
   return `https://wa.me/${cleanPhone}?text=${encodedMsg}`;
 }
 
@@ -58,22 +57,48 @@ export function getDialerUrl(phone: string): string {
   return `tel:${normalizeDialerNumber(phone)}`;
 }
 
-export function openWhatsApp(phone: string, message: string): void {
-  const url = getWhatsAppUrl(phone, message);
-  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+function isMobileDevice(): boolean {
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent
+  );
+}
 
-  if (isMobile) {
-    // On phones: navigate directly in current window so mobile OS immediately hands off to WhatsApp app without popup blocking
-    window.location.href = url;
+/**
+ * Opens WhatsApp with the given phone number and message.
+ *
+ * - Mobile (Android & iOS): Uses the `whatsapp://` URL scheme which directly
+ *   launches the WhatsApp app without routing through the wa.me web redirect.
+ *   This is the most reliable method on mobile because it bypasses the
+ *   intermediate web page and triggers the app via the OS.
+ *
+ * - Desktop: Opens `https://wa.me/` in a new browser tab so the user stays
+ *   on the current page.
+ *
+ * Always call this inside a synchronous click handler (never in an async
+ * callback) so browsers treat it as a trusted user-gesture navigation.
+ */
+export function openWhatsApp(phone: string, message: string): void {
+  const cleanPhone = normalizeWhatsAppNumber(phone);
+  const encodedMsg = encodeURIComponent(message);
+
+  if (isMobileDevice()) {
+    // whatsapp:// is natively handled by Android & iOS and opens the app directly.
+    // No intermediate wa.me web page, no App Link configuration required.
+    window.location.href = `whatsapp://send?phone=${cleanPhone}&text=${encodedMsg}`;
   } else {
-    // On desktop: open in new tab so user keeps their place in the catalog
-    window.open(url, '_blank', 'noopener,noreferrer');
+    // Desktop: open in a new tab so the user keeps their place on the site.
+    window.open(
+      `https://wa.me/${cleanPhone}?text=${encodedMsg}`,
+      '_blank',
+      'noopener,noreferrer'
+    );
   }
 }
 
+/**
+ * Triggers the device dialler for the given phone number.
+ * tel: links are handled natively by all mobile browsers and OSes.
+ */
 export function openDialer(phone: string): void {
-  const telUrl = getDialerUrl(phone);
-  window.location.href = telUrl;
+  window.location.href = `tel:${normalizeDialerNumber(phone)}`;
 }
-
-

@@ -22,7 +22,7 @@ import { api } from '../services/api';
 import ProductCard from '../components/cards/ProductCard';
 import StatusBadge from '../components/common/StatusBadge';
 import { SEO } from '../components/common/SEO';
-import { getWhatsAppUrl, getDialerUrl, generateGeneralWhatsAppMessage, formatPrice } from '../utils/whatsapp';
+import { getWhatsAppUrl, getDialerUrl, generateGeneralWhatsAppMessage, formatPrice, openWhatsApp } from '../utils/whatsapp';
 
 interface HomeProps {
   settings?: SiteSettings;
@@ -150,7 +150,7 @@ export const Home: React.FC<HomeProps> = ({ settings }) => {
 
                 <a
                   href={getWhatsAppUrl(whatsappNum, generateGeneralWhatsAppMessage(businessName))}
-                  onClick={() => api.trackEnquiry(null, 'Hero WhatsApp', 'WHATSAPP')}
+                  onClick={(e) => { e.preventDefault(); api.trackEnquiry(null, 'Hero WhatsApp', 'WHATSAPP'); openWhatsApp(whatsappNum, generateGeneralWhatsAppMessage(businessName)); }}
                   className="w-full sm:w-auto px-7 py-3.5 btn-whatsapp-apple flex items-center justify-center gap-2 text-sm font-semibold tracking-wide"
                 >
                   <MessageSquare className="w-4 h-4" />
@@ -453,7 +453,7 @@ export const Home: React.FC<HomeProps> = ({ settings }) => {
                         whatsappNum,
                         `Hello ${businessName}, I am interested in the ${flagshipProduct.name} (Code: ${flagshipProduct.product_code}). Please confirm availability.`
                       )}
-                      onClick={() => api.trackEnquiry(flagshipProduct.id, flagshipProduct.name, 'WHATSAPP')}
+                      onClick={(e) => { e.preventDefault(); api.trackEnquiry(flagshipProduct.id, flagshipProduct.name, 'WHATSAPP'); openWhatsApp(whatsappNum, `Hello ${businessName}, I am interested in the ${flagshipProduct.name} (Code: ${flagshipProduct.product_code}). Please confirm availability.`); }}
                       className="px-5 py-2.5 rounded-full btn-whatsapp-apple text-xs font-semibold flex items-center gap-1.5 shadow-sm"
                     >
                       <MessageSquare className="w-3.5 h-3.5" />
@@ -585,7 +585,7 @@ export const Home: React.FC<HomeProps> = ({ settings }) => {
                     whatsappNum,
                     `Hello ${businessName}, I would like to ask about the "${combo.name || combo.title}" combo priced at ${formatPrice(combo.price)}. Is it available for store pickup?`
                   )}
-                  onClick={() => api.trackEnquiry(null, combo.name || combo.title, 'WHATSAPP')}
+                  onClick={(e) => { e.preventDefault(); api.trackEnquiry(null, combo.name || combo.title, 'WHATSAPP'); openWhatsApp(whatsappNum, `Hello ${businessName}, I would like to ask about the "${combo.name || combo.title}" combo priced at ${formatPrice(combo.price)}. Is it available for store pickup?`); }}
                   className="px-5 py-2.5 rounded-full btn-whatsapp-apple text-xs font-semibold flex items-center gap-1.5 shadow-sm"
                 >
                   <MessageSquare className="w-3.5 h-3.5" />
@@ -702,7 +702,7 @@ export const Home: React.FC<HomeProps> = ({ settings }) => {
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
             <a
               href={getWhatsAppUrl(whatsappNum, generateGeneralWhatsAppMessage(businessName))}
-              onClick={() => api.trackEnquiry(null, 'Home Bottom CTA WhatsApp', 'WHATSAPP')}
+              onClick={(e) => { e.preventDefault(); api.trackEnquiry(null, 'Home Bottom CTA WhatsApp', 'WHATSAPP'); openWhatsApp(whatsappNum, generateGeneralWhatsAppMessage(businessName)); }}
               className="w-full sm:w-auto px-7 py-3.5 btn-whatsapp-apple flex items-center justify-center gap-2 text-sm font-semibold tracking-wide"
             >
               <MessageSquare className="w-4 h-4" />

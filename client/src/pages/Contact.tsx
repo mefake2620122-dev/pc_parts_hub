@@ -1,7 +1,7 @@
 import React from 'react';
 import { MapPin, Phone, MessageSquare, Clock, ExternalLink, ShieldCheck } from 'lucide-react';
 import { SiteSettings } from '../types';
-import { getWhatsAppUrl, getDialerUrl, generateGeneralWhatsAppMessage } from '../utils/whatsapp';
+import { getWhatsAppUrl, getDialerUrl, generateGeneralWhatsAppMessage, openWhatsApp } from '../utils/whatsapp';
 import { SEO } from '../components/common/SEO';
 
 interface ContactProps {
@@ -57,6 +57,7 @@ export const Contact: React.FC<ContactProps> = ({ settings }) => {
 
           <a
             href={getWhatsAppUrl(whatsapp, generateGeneralWhatsAppMessage(businessName))}
+            onClick={(e) => { e.preventDefault(); openWhatsApp(whatsapp, generateGeneralWhatsAppMessage(businessName)); }}
             className="w-full py-3 rounded-full btn-whatsapp-apple text-xs font-semibold shadow-sm flex items-center justify-center gap-2"
           >
             <MessageSquare className="w-4 h-4" />

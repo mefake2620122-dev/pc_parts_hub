@@ -19,6 +19,7 @@ import { SEO } from '../components/common/SEO';
 import {
   formatPrice,
   getWhatsAppUrl,
+  openWhatsApp,
   getDialerUrl,
   generateProductWhatsAppMessage
 } from '../utils/whatsapp';
@@ -89,8 +90,10 @@ export const PartDetail: React.FC<PartDetailProps> = ({ settings }) => {
   const waUrl = getWhatsAppUrl(whatsappNum, waMsg);
   const callUrl = getDialerUrl(phoneNum);
 
-  const handleWhatsApp = () => {
+  const handleWhatsApp = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
     api.trackEnquiry(product.id, product.name, 'WHATSAPP');
+    openWhatsApp(whatsappNum, waMsg);
   };
 
   const handleCall = () => {
