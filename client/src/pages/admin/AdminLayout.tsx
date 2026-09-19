@@ -12,7 +12,7 @@ import {
   Cpu,
   Boxes
 } from 'lucide-react';
-import { getAuthToken, removeAuthToken, api } from '../../services/api';
+import { getAuthToken, setAuthToken, removeAuthToken, api } from '../../services/api';
 
 export const AdminLayout: React.FC = () => {
   const navigate = useNavigate();
