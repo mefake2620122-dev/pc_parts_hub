@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Search, MessageSquare, Menu, X, Cpu, Command, Shield } from 'lucide-react';
 import { SiteSettings } from '../../types';
-import { getWhatsAppUrl, generateGeneralWhatsAppMessage } from '../../utils/whatsapp';
+import { getWhatsAppUrl, generateGeneralWhatsAppMessage, contactConfig } from '../../utils/whatsapp';
 import SearchOverlay from './SearchOverlay';
 
 interface NavbarProps {
@@ -15,8 +15,8 @@ export const GlassNavbar: React.FC<NavbarProps> = ({ settings }) => {
   const [searchOverlayOpen, setSearchOverlayOpen] = useState(false);
   const location = useLocation();
 
-  const businessName = settings?.business_name || 'PC PART HUB';
-  const whatsappNum = settings?.whatsapp || '919179527017';
+  const businessName = settings?.business_name || contactConfig.businessName;
+  const whatsappNum = settings?.whatsapp || contactConfig.whatsappNumber;
 
   // Scroll listener for compact navbar
   useEffect(() => {
@@ -115,6 +115,9 @@ export const GlassNavbar: React.FC<NavbarProps> = ({ settings }) => {
               {/* WhatsApp Quick CTA Button */}
               <a
                 href={getWhatsAppUrl(whatsappNum, generateGeneralWhatsAppMessage(businessName))}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Chat on WhatsApp with ${businessName}`}
                 className="hidden sm:flex items-center gap-1.5 px-3.5 py-1.5 rounded-full btn-whatsapp-apple text-xs font-semibold"
               >
                 <MessageSquare className="w-3.5 h-3.5" />
@@ -182,7 +185,10 @@ export const GlassNavbar: React.FC<NavbarProps> = ({ settings }) => {
 
             <a
               href={getWhatsAppUrl(whatsappNum, generateGeneralWhatsAppMessage(businessName))}
+              target="_blank"
+              rel="noopener noreferrer"
               onClick={() => setMobileMenuOpen(false)}
+              aria-label={`Direct WhatsApp enquiry with ${businessName}`}
               className="w-full py-3 rounded-full btn-whatsapp-apple font-semibold text-white flex items-center justify-center gap-2 text-sm shadow-md"
             >
               <MessageSquare className="w-4 h-4" />

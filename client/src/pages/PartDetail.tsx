@@ -19,9 +19,9 @@ import { SEO } from '../components/common/SEO';
 import {
   formatPrice,
   getWhatsAppUrl,
-  openWhatsApp,
   getDialerUrl,
-  generateProductWhatsAppMessage
+  generateProductWhatsAppMessage,
+  contactConfig
 } from '../utils/whatsapp';
 
 interface PartDetailProps {
@@ -37,9 +37,9 @@ export const PartDetail: React.FC<PartDetailProps> = ({ settings }) => {
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
 
-  const businessName = settings?.business_name || 'PC PART HUB';
-  const whatsappNum = settings?.whatsapp || '919179527017';
-  const phoneNum = settings?.phone || '+91 91795 27017';
+  const businessName = settings?.business_name || contactConfig.businessName;
+  const whatsappNum = settings?.whatsapp || contactConfig.whatsappNumber;
+  const phoneNum = settings?.phone || contactConfig.phoneNumber;
   const storeAddress = settings?.address || 'Shop 14, Commercial Tech Zone, Nehru Place, New Delhi';
 
   useEffect(() => {
@@ -84,16 +84,12 @@ export const PartDetail: React.FC<PartDetailProps> = ({ settings }) => {
     ? product.images
     : [{ id: 0, image_url: product.primary_image || 'https://placehold.co/800x600/f5f5f7/1d1d1f?text=PC+Part', is_primary: 1 }];
 
-  const waMsg = isSold
-    ? `Hello ${businessName}, I saw that ${product.name} (Code: ${product.product_code}) is currently Sold Out. Do you have any similar hardware coming in stock soon?`
-    : generateProductWhatsAppMessage(product, businessName);
+  const waMsg = generateProductWhatsAppMessage(product, businessName);
   const waUrl = getWhatsAppUrl(whatsappNum, waMsg);
   const callUrl = getDialerUrl(phoneNum);
 
-  const handleWhatsApp = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
+  const handleWhatsApp = () => {
     api.trackEnquiry(product.id, product.name, 'WHATSAPP');
-    openWhatsApp(whatsappNum, waMsg);
   };
 
   const handleCall = () => {
@@ -277,7 +273,10 @@ export const PartDetail: React.FC<PartDetailProps> = ({ settings }) => {
           <div className="space-y-3 pt-1">
             <a
               href={waUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               onClick={handleWhatsApp}
+              aria-label={`Enquire about ${product.name} on WhatsApp`}
               className={`w-full py-3.5 px-6 rounded-full font-semibold text-sm tracking-wide flex items-center justify-center gap-2 transition ${
                 isSold
                   ? 'bg-[#f5f5f7] hover:bg-[#e5e5ea] text-[#6e6e73]'
@@ -291,6 +290,7 @@ export const PartDetail: React.FC<PartDetailProps> = ({ settings }) => {
             <a
               href={callUrl}
               onClick={handleCall}
+              aria-label={`Call store at ${phoneNum}`}
               className="w-full py-3 px-6 rounded-full btn-apple-secondary text-sm font-semibold flex items-center justify-center gap-2"
             >
               <Phone className="w-4 h-4 text-[#0071e3]" />

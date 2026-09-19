@@ -1,7 +1,7 @@
 import React from 'react';
 import { ShieldCheck, Cpu, CheckCircle2, MessageSquare, Search } from 'lucide-react';
 import { SiteSettings } from '../types';
-import { getWhatsAppUrl, generateGeneralWhatsAppMessage, openWhatsApp } from '../utils/whatsapp';
+import { getWhatsAppUrl, generateGeneralWhatsAppMessage, contactConfig } from '../utils/whatsapp';
 import { SEO } from '../components/common/SEO';
 
 interface AboutProps {
@@ -9,8 +9,8 @@ interface AboutProps {
 }
 
 export const About: React.FC<AboutProps> = ({ settings }) => {
-  const businessName = settings?.business_name || 'PC PART HUB';
-  const whatsappNum = settings?.whatsapp || '919179527017';
+  const businessName = settings?.business_name || contactConfig.businessName;
+  const whatsappNum = settings?.whatsapp || contactConfig.whatsappNumber;
   const aboutCustom = settings?.about_text;
 
   return (
@@ -116,7 +116,9 @@ export const About: React.FC<AboutProps> = ({ settings }) => {
         </p>
         <a
           href={getWhatsAppUrl(whatsappNum, generateGeneralWhatsAppMessage(businessName))}
-          onClick={(e) => { e.preventDefault(); openWhatsApp(whatsappNum, generateGeneralWhatsAppMessage(businessName)); }}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={`Chat on WhatsApp with ${businessName} technicians`}
           className="px-7 py-3 rounded-full btn-whatsapp-apple text-xs font-semibold inline-flex items-center gap-2 shadow-sm"
         >
           <MessageSquare className="w-4 h-4" />

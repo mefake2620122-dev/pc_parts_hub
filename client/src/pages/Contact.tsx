@@ -1,7 +1,7 @@
 import React from 'react';
 import { MapPin, Phone, MessageSquare, Clock, ExternalLink, ShieldCheck } from 'lucide-react';
 import { SiteSettings } from '../types';
-import { getWhatsAppUrl, getDialerUrl, generateGeneralWhatsAppMessage, openWhatsApp } from '../utils/whatsapp';
+import { getWhatsAppUrl, getDialerUrl, generateGeneralWhatsAppMessage, contactConfig } from '../utils/whatsapp';
 import { SEO } from '../components/common/SEO';
 
 interface ContactProps {
@@ -9,9 +9,9 @@ interface ContactProps {
 }
 
 export const Contact: React.FC<ContactProps> = ({ settings }) => {
-  const businessName = settings?.business_name || 'PC PART HUB';
-  const phone = settings?.phone || '+91 91795 27017';
-  const whatsapp = settings?.whatsapp || '919179527017';
+  const businessName = settings?.business_name || contactConfig.businessName;
+  const phone = settings?.phone || contactConfig.phoneNumber;
+  const whatsapp = settings?.whatsapp || contactConfig.whatsappNumber;
   const address = settings?.address || 'Shop 14, Commercial Tech Zone, Nehru Place, New Delhi, India 110019';
   const mapsUrl = settings?.maps_url || 'https://maps.google.com/?q=Nehru+Place+New+Delhi';
   const hours = settings?.opening_hours || 'Mon – Sat: 11:00 AM – 8:30 PM (Sunday by Appointment)';
@@ -57,7 +57,9 @@ export const Contact: React.FC<ContactProps> = ({ settings }) => {
 
           <a
             href={getWhatsAppUrl(whatsapp, generateGeneralWhatsAppMessage(businessName))}
-            onClick={(e) => { e.preventDefault(); openWhatsApp(whatsapp, generateGeneralWhatsAppMessage(businessName)); }}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Start WhatsApp chat with ${businessName}`}
             className="w-full py-3 rounded-full btn-whatsapp-apple text-xs font-semibold shadow-sm flex items-center justify-center gap-2"
           >
             <MessageSquare className="w-4 h-4" />
@@ -82,6 +84,7 @@ export const Contact: React.FC<ContactProps> = ({ settings }) => {
 
           <a
             href={getDialerUrl(phone)}
+            aria-label={`Call ${businessName} now at ${phone}`}
             className="w-full py-3 rounded-full btn-apple-secondary text-xs font-semibold shadow-xs flex items-center justify-center gap-2"
           >
             <Phone className="w-4 h-4 text-[#0071e3]" />

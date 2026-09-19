@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { MessageSquare, ArrowRight, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { Product, SiteSettings } from '../../types';
 import StatusBadge from '../common/StatusBadge';
-import { formatPrice, getWhatsAppUrl, generateProductWhatsAppMessage, openWhatsApp } from '../../utils/whatsapp';
+import { formatPrice, getWhatsAppUrl, generateProductWhatsAppMessage, contactConfig } from '../../utils/whatsapp';
 import { api } from '../../services/api';
 
 interface ProductCardProps {
@@ -12,20 +12,16 @@ interface ProductCardProps {
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, settings }) => {
-  const whatsappNum = settings?.whatsapp || '919179527017';
-  const businessName = settings?.business_name || 'PC PART HUB';
+  const whatsappNum = settings?.whatsapp || contactConfig.whatsappNumber;
+  const businessName = settings?.business_name || contactConfig.businessName;
   const isSold = product.stock_status === 'SOLD_OUT';
 
-  const waMsg = isSold
-    ? `Hello ${businessName}, I saw that ${product.name} (Code: ${product.product_code}) is currently Sold Out. Do you have any similar hardware coming in stock soon?`
-    : generateProductWhatsAppMessage(product, businessName);
+  const waMsg = generateProductWhatsAppMessage(product, businessName);
   const waUrl = getWhatsAppUrl(whatsappNum, waMsg);
 
   const handleWhatsApp = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
     e.stopPropagation();
     api.trackEnquiry(product.id, product.name, 'WHATSAPP');
-    openWhatsApp(whatsappNum, waMsg);
   };
 
   const imageSrc = product.primary_image || (product.images && product.images[0]?.image_url) || 'https://placehold.co/800x600/f5f5f7/1d1d1f?text=PC+Part';
@@ -129,7 +125,10 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, settings }) =
 
             <a
               href={waUrl}
+              target="_blank"
+              rel="noopener noreferrer"
               onClick={handleWhatsApp}
+              aria-label={`Enquire about ${product.name} on WhatsApp`}
               className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-full text-xs font-semibold tracking-wide transition ${
                 isSold
                   ? 'bg-[#f5f5f7] hover:bg-[#e5e5ea] text-[#6e6e73]'

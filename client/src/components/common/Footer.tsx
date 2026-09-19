@@ -2,17 +2,17 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Cpu, Phone, MessageSquare, MapPin, Clock, ShieldCheck, Lock } from 'lucide-react';
 import { SiteSettings } from '../../types';
-import { getWhatsAppUrl, getDialerUrl, generateGeneralWhatsAppMessage } from '../../utils/whatsapp';
+import { getWhatsAppUrl, getDialerUrl, generateGeneralWhatsAppMessage, contactConfig } from '../../utils/whatsapp';
 
 interface FooterProps {
   settings?: SiteSettings;
 }
 
 export const Footer: React.FC<FooterProps> = ({ settings }) => {
-  const businessName = settings?.business_name || 'PC PART HUB';
+  const businessName = settings?.business_name || contactConfig.businessName;
   const tagline = settings?.tagline || 'Pre-Owned Parts. Ready for Your Next Build.';
-  const phone = settings?.phone || '+91 91795 27017';
-  const whatsapp = settings?.whatsapp || '919179527017';
+  const phone = settings?.phone || contactConfig.phoneNumber;
+  const whatsapp = settings?.whatsapp || contactConfig.whatsappNumber;
   const address = settings?.address || 'Shop 14, Commercial Tech Zone, Nehru Place, New Delhi, India 110019';
   const hours = settings?.opening_hours || 'Mon – Sat: 11:00 AM – 8:30 PM';
 
@@ -83,6 +83,9 @@ export const Footer: React.FC<FooterProps> = ({ settings }) => {
             <div className="space-y-2.5 text-xs text-[#6e6e73]">
               <a
                 href={getWhatsAppUrl(whatsapp, generateGeneralWhatsAppMessage(businessName))}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={`Chat on WhatsApp with ${businessName}`}
                 className="flex items-center gap-2 text-emerald-700 hover:text-emerald-800 font-semibold transition-colors text-left"
               >
                 <MessageSquare className="w-3.5 h-3.5" />
@@ -90,6 +93,7 @@ export const Footer: React.FC<FooterProps> = ({ settings }) => {
               </a>
               <a
                 href={getDialerUrl(phone)}
+                aria-label={`Call ${businessName} at ${phone}`}
                 className="flex items-center gap-2 text-[#1d1d1f] hover:text-[#0071e3] font-medium transition-colors text-left"
               >
                 <Phone className="w-3.5 h-3.5 text-[#0071e3]" />
