@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Cpu, Phone, MessageSquare, MapPin, Clock, ShieldCheck, Lock } from 'lucide-react';
 import { SiteSettings } from '../../types';
-import { openWhatsApp, openDialer, generateGeneralWhatsAppMessage } from '../../utils/whatsapp';
+import { getWhatsAppUrl, getDialerUrl, generateGeneralWhatsAppMessage } from '../../utils/whatsapp';
 
 interface FooterProps {
   settings?: SiteSettings;
@@ -11,8 +11,8 @@ interface FooterProps {
 export const Footer: React.FC<FooterProps> = ({ settings }) => {
   const businessName = settings?.business_name || 'PC PART HUB';
   const tagline = settings?.tagline || 'Pre-Owned Parts. Ready for Your Next Build.';
-  const phone = settings?.phone || '+91 98765 43210';
-  const whatsapp = settings?.whatsapp || '919876543210';
+  const phone = settings?.phone || '+91 91795 27017';
+  const whatsapp = settings?.whatsapp || '919179527017';
   const address = settings?.address || 'Shop 14, Commercial Tech Zone, Nehru Place, New Delhi, India 110019';
   const hours = settings?.opening_hours || 'Mon – Sat: 11:00 AM – 8:30 PM';
 
@@ -81,20 +81,20 @@ export const Footer: React.FC<FooterProps> = ({ settings }) => {
               Direct Contact
             </p>
             <div className="space-y-2.5 text-xs text-[#6e6e73]">
-              <button
-                onClick={() => openWhatsApp(whatsapp, generateGeneralWhatsAppMessage(businessName))}
+              <a
+                href={getWhatsAppUrl(whatsapp, generateGeneralWhatsAppMessage(businessName))}
                 className="flex items-center gap-2 text-emerald-700 hover:text-emerald-800 font-semibold transition-colors text-left"
               >
                 <MessageSquare className="w-3.5 h-3.5" />
                 <span>WhatsApp: {phone}</span>
-              </button>
-              <button
-                onClick={() => openDialer(phone)}
+              </a>
+              <a
+                href={getDialerUrl(phone)}
                 className="flex items-center gap-2 text-[#1d1d1f] hover:text-[#0071e3] font-medium transition-colors text-left"
               >
                 <Phone className="w-3.5 h-3.5 text-[#0071e3]" />
                 <span>Call Shop: {phone}</span>
-              </button>
+              </a>
               <div className="flex items-start gap-2 pt-1 text-[#86868b]">
                 <MapPin className="w-3.5 h-3.5 shrink-0 mt-0.5 text-[#6e6e73]" />
                 <span className="leading-snug">{address}</span>

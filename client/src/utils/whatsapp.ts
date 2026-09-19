@@ -21,7 +21,7 @@ export function generateGeneralWhatsAppMessage(businessName = 'PC Part Hub'): st
 
 export function normalizeWhatsAppNumber(phone: string): string {
   let clean = (phone || '').replace(/[^0-9]/g, '');
-  if (!clean) return '919876543210';
+  if (!clean) return '919179527017';
   // If 10 digits (e.g. Indian mobile number without country code), prepend 91
   if (clean.length === 10) {
     clean = '91' + clean;
@@ -33,7 +33,7 @@ export function normalizeWhatsAppNumber(phone: string): string {
 
 export function normalizeDialerNumber(phone: string): string {
   let clean = (phone || '').replace(/[^0-9+]/g, '');
-  if (!clean) return '+919876543210';
+  if (!clean) return '+919179527017';
   if (!clean.startsWith('+')) {
     const digits = clean.replace(/[^0-9]/g, '');
     if (digits.length === 10) {
@@ -50,8 +50,8 @@ export function normalizeDialerNumber(phone: string): string {
 export function getWhatsAppUrl(phone: string, message: string): string {
   const cleanPhone = normalizeWhatsAppNumber(phone);
   const encodedMsg = encodeURIComponent(message);
-  // Universal WhatsApp Link: Android & iOS intercept this automatically via App Links / Universal Links
-  return `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMsg}`;
+  // Official WhatsApp universal link (wa.me) - natively intercepted by iOS Safari and Android Chrome
+  return `https://wa.me/${cleanPhone}?text=${encodedMsg}`;
 }
 
 export function getDialerUrl(phone: string): string {
@@ -59,70 +59,21 @@ export function getDialerUrl(phone: string): string {
 }
 
 export function openWhatsApp(phone: string, message: string): void {
-  const cleanPhone = normalizeWhatsAppNumber(phone);
-  const encodedMsg = encodeURIComponent(message);
-  
-  // Universal Link that works seamlessly across iOS Safari, Android Chrome, and Desktop
-  const universalUrl = `https://api.whatsapp.com/send?phone=${cleanPhone}&text=${encodedMsg}`;
-  const nativeAppUrl = `whatsapp://send?phone=${cleanPhone}&text=${encodedMsg}`;
-
+  const url = getWhatsAppUrl(phone, message);
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
   if (isMobile) {
-    // On phones and tablets:
-    // Trigger direct universal navigation so iOS Safari and Android Chrome hand off to WhatsApp App
-    // without triggering mobile popup blockers
-    try {
-      const a = document.createElement('a');
-      a.href = universalUrl;
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => {
-        if (document.body.contains(a)) {
-          document.body.removeChild(a);
-        }
-      }, 500);
-    } catch {
-      window.location.href = universalUrl;
-    }
-    return;
-  }
-
-  // On Desktop / Laptop:
-  // First try the native desktop application
-  try {
-    window.location.href = nativeAppUrl;
-
-    // Fallback: If desktop app is not installed, open WhatsApp Web in new tab
-    const fallbackTimer = setTimeout(() => {
-      if (document.hasFocus()) {
-        window.open(universalUrl, '_blank', 'noopener,noreferrer');
-      }
-    }, 2000);
-
-    window.addEventListener('blur', () => clearTimeout(fallbackTimer), { once: true });
-  } catch (err) {
-    window.open(universalUrl, '_blank', 'noopener,noreferrer');
+    // On phones: navigate directly in current window so mobile OS immediately hands off to WhatsApp app without popup blocking
+    window.location.href = url;
+  } else {
+    // On desktop: open in new tab so user keeps their place in the catalog
+    window.open(url, '_blank', 'noopener,noreferrer');
   }
 }
 
 export function openDialer(phone: string): void {
   const telUrl = getDialerUrl(phone);
-  
-  // Direct anchor click triggers native telephone dialer app on all smartphones
-  try {
-    const a = document.createElement('a');
-    a.href = telUrl;
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => {
-      if (document.body.contains(a)) {
-        document.body.removeChild(a);
-      }
-    }, 500);
-  } catch {
-    window.location.href = telUrl;
-  }
+  window.location.href = telUrl;
 }
 
 

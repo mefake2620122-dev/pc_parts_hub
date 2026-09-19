@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { MessageSquare, ArrowRight, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import { Product, SiteSettings } from '../../types';
 import StatusBadge from '../common/StatusBadge';
-import { formatPrice, openWhatsApp, generateProductWhatsAppMessage } from '../../utils/whatsapp';
+import { formatPrice, getWhatsAppUrl, generateProductWhatsAppMessage } from '../../utils/whatsapp';
 import { api } from '../../services/api';
 
 interface ProductCardProps {
@@ -12,21 +12,18 @@ interface ProductCardProps {
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product, settings }) => {
-  const whatsappNum = settings?.whatsapp || '919876543210';
+  const whatsappNum = settings?.whatsapp || '919179527017';
   const businessName = settings?.business_name || 'PC PART HUB';
   const isSold = product.stock_status === 'SOLD_OUT';
 
+  const waMsg = isSold
+    ? `Hello ${businessName}, I saw that ${product.name} (Code: ${product.product_code}) is currently Sold Out. Do you have any similar hardware coming in stock soon?`
+    : generateProductWhatsAppMessage(product, businessName);
+  const waUrl = getWhatsAppUrl(whatsappNum, waMsg);
+
   const handleWhatsApp = (e: React.MouseEvent) => {
-    e.preventDefault();
     e.stopPropagation();
     api.trackEnquiry(product.id, product.name, 'WHATSAPP');
-
-    if (isSold) {
-      const msg = `Hello ${businessName}, I saw that ${product.name} (Code: ${product.product_code}) is currently Sold Out. Do you have any similar hardware coming in stock soon?`;
-      openWhatsApp(whatsappNum, msg);
-    } else {
-      openWhatsApp(whatsappNum, generateProductWhatsAppMessage(product, businessName));
-    }
   };
 
   const imageSrc = product.primary_image || (product.images && product.images[0]?.image_url) || 'https://placehold.co/800x600/f5f5f7/1d1d1f?text=PC+Part';
@@ -128,7 +125,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, settings }) =
               <ArrowRight className="w-3 h-3 text-[#86868b]" />
             </Link>
 
-            <button
+            <a
+              href={waUrl}
               onClick={handleWhatsApp}
               className={`flex items-center justify-center gap-1.5 py-2 px-3 rounded-full text-xs font-semibold tracking-wide transition ${
                 isSold
@@ -138,7 +136,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, settings }) =
             >
               <MessageSquare className="w-3.5 h-3.5" />
               <span>{isSold ? 'Similar?' : 'WhatsApp'}</span>
-            </button>
+            </a>
           </div>
         </div>
 

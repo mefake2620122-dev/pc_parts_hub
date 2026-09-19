@@ -18,8 +18,8 @@ import StatusBadge from '../components/common/StatusBadge';
 import { SEO } from '../components/common/SEO';
 import {
   formatPrice,
-  openWhatsApp,
-  openDialer,
+  getWhatsAppUrl,
+  getDialerUrl,
   generateProductWhatsAppMessage
 } from '../utils/whatsapp';
 
@@ -37,8 +37,8 @@ export const PartDetail: React.FC<PartDetailProps> = ({ settings }) => {
   const [copied, setCopied] = useState(false);
 
   const businessName = settings?.business_name || 'PC PART HUB';
-  const whatsappNum = settings?.whatsapp || '919876543210';
-  const phoneNum = settings?.phone || '+91 98765 43210';
+  const whatsappNum = settings?.whatsapp || '919179527017';
+  const phoneNum = settings?.phone || '+91 91795 27017';
   const storeAddress = settings?.address || 'Shop 14, Commercial Tech Zone, Nehru Place, New Delhi';
 
   useEffect(() => {
@@ -83,19 +83,18 @@ export const PartDetail: React.FC<PartDetailProps> = ({ settings }) => {
     ? product.images
     : [{ id: 0, image_url: product.primary_image || 'https://placehold.co/800x600/f5f5f7/1d1d1f?text=PC+Part', is_primary: 1 }];
 
+  const waMsg = isSold
+    ? `Hello ${businessName}, I saw that ${product.name} (Code: ${product.product_code}) is currently Sold Out. Do you have any similar hardware coming in stock soon?`
+    : generateProductWhatsAppMessage(product, businessName);
+  const waUrl = getWhatsAppUrl(whatsappNum, waMsg);
+  const callUrl = getDialerUrl(phoneNum);
+
   const handleWhatsApp = () => {
     api.trackEnquiry(product.id, product.name, 'WHATSAPP');
-    if (isSold) {
-      const msg = `Hello ${businessName}, I saw that ${product.name} (Code: ${product.product_code}) is currently Sold Out. Do you have any similar hardware coming in stock soon?`;
-      openWhatsApp(whatsappNum, msg);
-    } else {
-      openWhatsApp(whatsappNum, generateProductWhatsAppMessage(product, businessName));
-    }
   };
 
   const handleCall = () => {
     api.trackEnquiry(product.id, product.name, 'CALL');
-    openDialer(phoneNum);
   };
 
   const handleCopyLink = () => {
@@ -273,7 +272,8 @@ export const PartDetail: React.FC<PartDetailProps> = ({ settings }) => {
 
           {/* Primary Action Buttons */}
           <div className="space-y-3 pt-1">
-            <button
+            <a
+              href={waUrl}
               onClick={handleWhatsApp}
               className={`w-full py-3.5 px-6 rounded-full font-semibold text-sm tracking-wide flex items-center justify-center gap-2 transition ${
                 isSold
@@ -283,15 +283,16 @@ export const PartDetail: React.FC<PartDetailProps> = ({ settings }) => {
             >
               <MessageSquare className="w-4 h-4" />
               <span>{isSold ? 'Ask About Similar Hardware' : 'WhatsApp Enquire to Buy'}</span>
-            </button>
+            </a>
 
-            <button
+            <a
+              href={callUrl}
               onClick={handleCall}
               className="w-full py-3 px-6 rounded-full btn-apple-secondary text-sm font-semibold flex items-center justify-center gap-2"
             >
               <Phone className="w-4 h-4 text-[#0071e3]" />
               <span>Call Store ({phoneNum})</span>
-            </button>
+            </a>
           </div>
 
           {/* Dynamic Technical Specifications Table */}

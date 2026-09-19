@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Search, MessageSquare, Menu, X, Cpu, Command, Shield } from 'lucide-react';
 import { SiteSettings } from '../../types';
-import { openWhatsApp, generateGeneralWhatsAppMessage } from '../../utils/whatsapp';
+import { getWhatsAppUrl, generateGeneralWhatsAppMessage } from '../../utils/whatsapp';
 import SearchOverlay from './SearchOverlay';
 
 interface NavbarProps {
@@ -16,7 +16,7 @@ export const GlassNavbar: React.FC<NavbarProps> = ({ settings }) => {
   const location = useLocation();
 
   const businessName = settings?.business_name || 'PC PART HUB';
-  const whatsappNum = settings?.whatsapp || '919876543210';
+  const whatsappNum = settings?.whatsapp || '919179527017';
 
   // Scroll listener for compact navbar
   useEffect(() => {
@@ -113,13 +113,13 @@ export const GlassNavbar: React.FC<NavbarProps> = ({ settings }) => {
               </button>
 
               {/* WhatsApp Quick CTA Button */}
-              <button
-                onClick={() => openWhatsApp(whatsappNum, generateGeneralWhatsAppMessage(businessName))}
+              <a
+                href={getWhatsAppUrl(whatsappNum, generateGeneralWhatsAppMessage(businessName))}
                 className="hidden sm:flex items-center gap-1.5 px-3.5 py-1.5 rounded-full btn-whatsapp-apple text-xs font-semibold"
               >
                 <MessageSquare className="w-3.5 h-3.5" />
                 <span>WhatsApp</span>
-              </button>
+              </a>
 
               {/* Admin Portal Button */}
               <Link
@@ -180,16 +180,14 @@ export const GlassNavbar: React.FC<NavbarProps> = ({ settings }) => {
               <span>Search Inventory...</span>
             </button>
 
-            <button
-              onClick={() => {
-                setMobileMenuOpen(false);
-                openWhatsApp(whatsappNum, generateGeneralWhatsAppMessage(businessName));
-              }}
+            <a
+              href={getWhatsAppUrl(whatsappNum, generateGeneralWhatsAppMessage(businessName))}
+              onClick={() => setMobileMenuOpen(false)}
               className="w-full py-3 rounded-full btn-whatsapp-apple font-semibold text-white flex items-center justify-center gap-2 text-sm shadow-md"
             >
               <MessageSquare className="w-4 h-4" />
               <span>Direct WhatsApp Enquiry</span>
-            </button>
+            </a>
           </div>
         </div>
       )}

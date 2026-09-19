@@ -21,8 +21,7 @@ import { Product, Category, Combo, SiteSettings } from '../types';
 import { api } from '../services/api';
 import ProductCard from '../components/cards/ProductCard';
 import StatusBadge from '../components/common/StatusBadge';
-import { SEO } from '../components/common/SEO';
-import { openWhatsApp, openDialer, generateGeneralWhatsAppMessage, formatPrice } from '../utils/whatsapp';
+import { getWhatsAppUrl, getDialerUrl, generateGeneralWhatsAppMessage, formatPrice } from '../utils/whatsapp';
 
 interface HomeProps {
   settings?: SiteSettings;
@@ -41,8 +40,8 @@ export const Home: React.FC<HomeProps> = ({ settings }) => {
   const heroRef = useRef<HTMLDivElement>(null);
 
   const businessName = settings?.business_name || 'PC PART HUB';
-  const whatsappNum = settings?.whatsapp || '919876543210';
-  const phoneNum = settings?.phone || '+91 98765 43210';
+  const whatsappNum = settings?.whatsapp || '919179527017';
+  const phoneNum = settings?.phone || '+91 91795 27017';
 
   useEffect(() => {
     async function loadHomeData() {
@@ -148,13 +147,14 @@ export const Home: React.FC<HomeProps> = ({ settings }) => {
                   <ArrowRight className="w-4 h-4" />
                 </Link>
 
-                <button
-                  onClick={() => openWhatsApp(whatsappNum, generateGeneralWhatsAppMessage(businessName))}
+                <a
+                  href={getWhatsAppUrl(whatsappNum, generateGeneralWhatsAppMessage(businessName))}
+                  onClick={() => api.trackEnquiry(null, 'Hero WhatsApp', 'WHATSAPP')}
                   className="w-full sm:w-auto px-7 py-3.5 btn-whatsapp-apple flex items-center justify-center gap-2 text-sm font-semibold tracking-wide"
                 >
                   <MessageSquare className="w-4 h-4" />
                   <span>WhatsApp Us</span>
-                </button>
+                </a>
               </div>
 
               {/* Micro specs indicator */}
@@ -447,18 +447,17 @@ export const Home: React.FC<HomeProps> = ({ settings }) => {
                       View Part
                     </Link>
 
-                    <button
-                      onClick={() =>
-                        openWhatsApp(
-                          whatsappNum,
-                          `Hello ${businessName}, I am interested in the ${flagshipProduct.name} (Code: ${flagshipProduct.product_code}). Please confirm availability.`
-                        )
-                      }
+                    <a
+                      href={getWhatsAppUrl(
+                        whatsappNum,
+                        `Hello ${businessName}, I am interested in the ${flagshipProduct.name} (Code: ${flagshipProduct.product_code}). Please confirm availability.`
+                      )}
+                      onClick={() => api.trackEnquiry(flagshipProduct.id, flagshipProduct.name, 'WHATSAPP')}
                       className="px-5 py-2.5 rounded-full btn-whatsapp-apple text-xs font-semibold flex items-center gap-1.5 shadow-sm"
                     >
                       <MessageSquare className="w-3.5 h-3.5" />
                       <span>WhatsApp Enquire</span>
-                    </button>
+                    </a>
                   </div>
                 </div>
 
@@ -580,18 +579,17 @@ export const Home: React.FC<HomeProps> = ({ settings }) => {
                   </span>
                 </div>
 
-                <button
-                  onClick={() =>
-                    openWhatsApp(
-                      whatsappNum,
-                      `Hello ${businessName}, I would like to ask about the "${combo.name || combo.title}" combo priced at ${formatPrice(combo.price)}. Is it available for store pickup?`
-                    )
-                  }
+                <a
+                  href={getWhatsAppUrl(
+                    whatsappNum,
+                    `Hello ${businessName}, I would like to ask about the "${combo.name || combo.title}" combo priced at ${formatPrice(combo.price)}. Is it available for store pickup?`
+                  )}
+                  onClick={() => api.trackEnquiry(null, combo.name || combo.title, 'WHATSAPP')}
                   className="px-5 py-2.5 rounded-full btn-whatsapp-apple text-xs font-semibold flex items-center gap-1.5 shadow-sm"
                 >
                   <MessageSquare className="w-3.5 h-3.5" />
                   <span>Ask About This Build</span>
-                </button>
+                </a>
               </div>
 
             </div>
@@ -701,21 +699,23 @@ export const Home: React.FC<HomeProps> = ({ settings }) => {
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-            <button
-              onClick={() => openWhatsApp(whatsappNum, generateGeneralWhatsAppMessage(businessName))}
+            <a
+              href={getWhatsAppUrl(whatsappNum, generateGeneralWhatsAppMessage(businessName))}
+              onClick={() => api.trackEnquiry(null, 'Home Bottom CTA WhatsApp', 'WHATSAPP')}
               className="w-full sm:w-auto px-7 py-3.5 btn-whatsapp-apple flex items-center justify-center gap-2 text-sm font-semibold tracking-wide"
             >
               <MessageSquare className="w-4 h-4" />
               <span>WhatsApp Enquire</span>
-            </button>
+            </a>
 
-            <button
-              onClick={() => openDialer(phoneNum)}
+            <a
+              href={getDialerUrl(phoneNum)}
+              onClick={() => api.trackEnquiry(null, 'Home Bottom CTA Call', 'CALL')}
               className="w-full sm:w-auto px-7 py-3.5 btn-apple-secondary flex items-center justify-center gap-2 text-sm font-semibold tracking-wide"
             >
               <Phone className="w-4 h-4 text-[#0071e3]" />
               <span>Call {phoneNum}</span>
-            </button>
+            </a>
           </div>
 
           <p className="text-xs text-[#86868b] pt-1">

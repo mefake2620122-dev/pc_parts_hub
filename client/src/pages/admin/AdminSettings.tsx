@@ -234,7 +234,7 @@ export const AdminSettings: React.FC = () => {
                 type="text"
                 value={settings.whatsapp || ''}
                 onChange={(e) => handleChange('whatsapp', e.target.value)}
-                placeholder="919876543210"
+                placeholder="919179527017"
                 className="w-full p-2.5 bg-[#f5f5f7] border border-black/8 rounded-xl text-xs sm:text-sm text-[#1d1d1f] focus:outline-none focus:border-[#0071e3] font-mono"
               />
             </div>

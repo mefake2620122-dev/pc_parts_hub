@@ -1,7 +1,7 @@
 import React from 'react';
 import { ShieldCheck, Cpu, CheckCircle2, MessageSquare, Search } from 'lucide-react';
 import { SiteSettings } from '../types';
-import { openWhatsApp, generateGeneralWhatsAppMessage } from '../utils/whatsapp';
+import { getWhatsAppUrl, generateGeneralWhatsAppMessage } from '../utils/whatsapp';
 import { SEO } from '../components/common/SEO';
 
 interface AboutProps {
@@ -10,7 +10,7 @@ interface AboutProps {
 
 export const About: React.FC<AboutProps> = ({ settings }) => {
   const businessName = settings?.business_name || 'PC PART HUB';
-  const whatsappNum = settings?.whatsapp || '919876543210';
+  const whatsappNum = settings?.whatsapp || '919179527017';
   const aboutCustom = settings?.about_text;
 
   return (
@@ -114,13 +114,13 @@ export const About: React.FC<AboutProps> = ({ settings }) => {
         <p className="text-xs sm:text-sm text-[#86868b] max-w-md mx-auto">
           Share your target budget, games, or workload with our technicians on WhatsApp for custom part recommendations.
         </p>
-        <button
-          onClick={() => openWhatsApp(whatsappNum, generateGeneralWhatsAppMessage(businessName))}
+        <a
+          href={getWhatsAppUrl(whatsappNum, generateGeneralWhatsAppMessage(businessName))}
           className="px-7 py-3 rounded-full btn-whatsapp-apple text-xs font-semibold inline-flex items-center gap-2 shadow-sm"
         >
           <MessageSquare className="w-4 h-4" />
           <span>Chat with Technicians</span>
-        </button>
+        </a>
       </div>
 
     </div>

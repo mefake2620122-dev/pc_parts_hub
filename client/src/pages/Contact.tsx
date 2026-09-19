@@ -1,7 +1,7 @@
 import React from 'react';
 import { MapPin, Phone, MessageSquare, Clock, ExternalLink, ShieldCheck } from 'lucide-react';
 import { SiteSettings } from '../types';
-import { openWhatsApp, openDialer, generateGeneralWhatsAppMessage } from '../utils/whatsapp';
+import { getWhatsAppUrl, getDialerUrl, generateGeneralWhatsAppMessage } from '../utils/whatsapp';
 import { SEO } from '../components/common/SEO';
 
 interface ContactProps {
@@ -10,8 +10,8 @@ interface ContactProps {
 
 export const Contact: React.FC<ContactProps> = ({ settings }) => {
   const businessName = settings?.business_name || 'PC PART HUB';
-  const phone = settings?.phone || '+91 98765 43210';
-  const whatsapp = settings?.whatsapp || '919876543210';
+  const phone = settings?.phone || '+91 91795 27017';
+  const whatsapp = settings?.whatsapp || '919179527017';
   const address = settings?.address || 'Shop 14, Commercial Tech Zone, Nehru Place, New Delhi, India 110019';
   const mapsUrl = settings?.maps_url || 'https://maps.google.com/?q=Nehru+Place+New+Delhi';
   const hours = settings?.opening_hours || 'Mon – Sat: 11:00 AM – 8:30 PM (Sunday by Appointment)';
@@ -55,12 +55,13 @@ export const Contact: React.FC<ContactProps> = ({ settings }) => {
             </p>
           </div>
 
-          <button
-            onClick={() => openWhatsApp(whatsapp, generateGeneralWhatsAppMessage(businessName))}
-            className="w-full py-3 rounded-full btn-whatsapp-apple text-xs font-semibold shadow-sm"
+          <a
+            href={getWhatsAppUrl(whatsapp, generateGeneralWhatsAppMessage(businessName))}
+            className="w-full py-3 rounded-full btn-whatsapp-apple text-xs font-semibold shadow-sm flex items-center justify-center gap-2"
           >
-            Start WhatsApp Chat
-          </button>
+            <MessageSquare className="w-4 h-4" />
+            <span>Start WhatsApp Chat</span>
+          </a>
         </div>
 
         {/* Call Card */}
@@ -78,12 +79,13 @@ export const Contact: React.FC<ContactProps> = ({ settings }) => {
             </p>
           </div>
 
-          <button
-            onClick={() => openDialer(phone)}
-            className="w-full py-3 rounded-full btn-apple-secondary text-xs font-semibold shadow-xs"
+          <a
+            href={getDialerUrl(phone)}
+            className="w-full py-3 rounded-full btn-apple-secondary text-xs font-semibold shadow-xs flex items-center justify-center gap-2"
           >
-            Call Now
-          </button>
+            <Phone className="w-4 h-4 text-[#0071e3]" />
+            <span>Call Now</span>
+          </a>
         </div>
 
         {/* Location Card */}

@@ -9,8 +9,8 @@ interface MobileBottomBarProps {
 }
 
 export const MobileBottomBar: React.FC<MobileBottomBarProps> = ({ settings }) => {
-  const whatsappNum = settings?.whatsapp || '919876543210';
-  const phoneNum = settings?.phone || '+919876543210';
+  const whatsappNum = settings?.whatsapp || '919179527017';
+  const phoneNum = settings?.phone || '+919179527017';
   const businessName = settings?.business_name || 'PC PART HUB';
 
   const waUrl = getWhatsAppUrl(whatsappNum, generateGeneralWhatsAppMessage(businessName));
@@ -40,7 +40,6 @@ export const MobileBottomBar: React.FC<MobileBottomBarProps> = ({ settings }) =>
         {/* WhatsApp Button */}
         <a
           href={waUrl}
-          target="_blank"
           rel="noopener noreferrer"
           onClick={handleWhatsAppClick}
           className="flex items-center justify-center gap-2 py-2.5 px-3 rounded-full btn-whatsapp-apple text-white font-semibold text-xs tracking-wide transition active:scale-95 shadow-sm"
