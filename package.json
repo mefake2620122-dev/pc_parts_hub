@@ -2,14 +2,19 @@
   "name": "pc-parts-hub",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
+    "postinstall": "npm install --prefix client && npm install --prefix server",
     "install:all": "npm install --prefix client && npm install --prefix server",
     "dev:client": "npm run dev --prefix client",
     "dev:server": "npm run dev --prefix server",
-    "dev": "npm run dev:server",
+    "dev": "node -e \"const { spawn } = require('child_process'); spawn('npm', ['run', 'dev:server'], { stdio: 'inherit', shell: true }); spawn('npm', ['run', 'dev:client'], { stdio: 'inherit', shell: true });\"",
     "build:client": "npm run build --prefix client",
     "build:server": "npm run build --prefix server",
-    "build": "npm run build --prefix client && npm run build --prefix server",
+    "build": "npm run build --prefix server && npm run build --prefix client",
     "start": "node server/dist/server.js"
   }
 }

@@ -57,9 +57,8 @@ router.get('/db-status', requireAdmin, (req: Request, res: Response): void => {
     res.json({
       status: 'connected',
       integrity: integrityResult[0]?.integrity_check === 'ok' ? 'HEALTHY' : 'CHECK_NEEDED',
-      journalMode: 'WAL',
-      engine: 'SQLite 3 (better-sqlite3)',
-      databaseFile: 'server/data/pc_parts_hub.sqlite',
+      engine: 'SQLite 3 (node:sqlite serverless built-in)',
+      databaseFile: process.env.VERCEL ? '/tmp/pc_parts_hub.sqlite' : 'server/data/pc_parts_hub.sqlite',
       counts: {
         products: productCount.count,
         categories: categoryCount.count,

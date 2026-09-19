@@ -1,4 +1,4 @@
-import Database from 'better-sqlite3';
+import { DatabaseSync } from 'node:sqlite';
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
@@ -6,17 +6,104 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const dataDir = path.join(__dirname, '../data');
+const isVercel = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+const dataDir = isVercel ? '/tmp' : path.join(__dirname, '../data');
+
 if (!fs.existsSync(dataDir)) {
   fs.mkdirSync(dataDir, { recursive: true });
 }
 
 const dbPath = path.join(dataDir, 'pc_parts_hub.sqlite');
-export const db = new Database(dbPath);
 
-// Enable WAL mode & foreign keys for high performance and integrity
-db.pragma('journal_mode = WAL');
-db.pragma('foreign_keys = ON');
+// On Vercel, copy pre-seeded SQLite database to /tmp if it doesn't exist yet
+const bundledDbPath = path.join(__dirname, '../data/pc_parts_hub.sqlite');
+if (isVercel && !fs.existsSync(dbPath) && fs.existsSync(bundledDbPath)) {
+  try {
+    fs.copyFileSync(bundledDbPath, dbPath);
+    console.log('Seeded database copied to /tmp/pc_parts_hub.sqlite');
+  } catch (err) {
+    console.error('Failed to copy bundled SQLite DB to /tmp:', err);
+  }
+}
+
+export const rawDb = new DatabaseSync(dbPath);
+
+// Enable WAL mode & foreign keys
+try {
+  rawDb.exec('PRAGMA foreign_keys = ON;');
+  rawDb.exec('PRAGMA journal_mode = WAL;');
+} catch {
+  // Ignore in environments where WAL is not supported
+}
+
+// Normalize undefined to null for SQLite parameter binding
+function normalizeParams(params: any[]): any[] {
+  return params.map(p => (p === undefined ? null : p));
+}
+
+export interface StatementWrapper {
+  get(...params: any[]): any;
+  all(...params: any[]): any[];
+  run(...params: any[]): { changes: number; lastInsertRowid: number };
+}
+
+export interface DatabaseWrapper {
+  exec(sql: string): void;
+  prepare(sql: string): StatementWrapper;
+  transaction<T extends (...args: any[]) => any>(fn: T): T;
+  pragma(sql: string): any;
+}
+
+export const db: DatabaseWrapper = {
+  exec(sql: string): void {
+    rawDb.exec(sql);
+  },
+
+  prepare(sql: string): StatementWrapper {
+    const stmt = rawDb.prepare(sql);
+    return {
+      get(...params: any[]) {
+        const norm = normalizeParams(params);
+        return stmt.get(...norm);
+      },
+      all(...params: any[]) {
+        const norm = normalizeParams(params);
+        return stmt.all(...norm);
+      },
+      run(...params: any[]) {
+        const norm = normalizeParams(params);
+        const res = stmt.run(...norm);
+        return {
+          changes: Number(res.changes),
+          lastInsertRowid: Number(res.lastInsertRowid)
+        };
+      }
+    };
+  },
+
+  transaction<T extends (...args: any[]) => any>(fn: T): T {
+    return ((...args: any[]) => {
+      rawDb.exec('BEGIN TRANSACTION;');
+      try {
+        const result = fn(...args);
+        rawDb.exec('COMMIT;');
+        return result;
+      } catch (error) {
+        rawDb.exec('ROLLBACK;');
+        throw error;
+      }
+    }) as T;
+  },
+
+  pragma(str: string): any {
+    try {
+      const stmt = rawDb.prepare(`PRAGMA ${str}`);
+      return stmt.all();
+    } catch {
+      return [];
+    }
+  }
+};
 
 export function initDatabase() {
   db.exec(`

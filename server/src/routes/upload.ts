@@ -8,13 +8,24 @@ import { requireAdmin } from '../middleware/auth.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const uploadDir = path.join(__dirname, '../../uploads');
+const isVercel = Boolean(process.env.VERCEL || process.env.AWS_LAMBDA_FUNCTION_NAME);
+const uploadDir = isVercel ? '/tmp/uploads' : path.join(__dirname, '../../uploads');
+
 if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+  try {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  } catch {
+    // Ignore in read-only environment
+  }
 }
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
+    if (!fs.existsSync(uploadDir)) {
+      try {
+        fs.mkdirSync(uploadDir, { recursive: true });
+      } catch {}
+    }
     cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
@@ -49,7 +60,20 @@ router.post('/', requireAdmin, upload.array('images', 10), (req: Request, res: R
     return;
   }
 
-  const urls = files.map(f => `/uploads/${f.filename}`);
+  const urls = files.map(f => {
+    // On Vercel, Base64 data URL ensures zero loss across serverless container restarts
+    if (isVercel && f.path && fs.existsSync(f.path)) {
+      try {
+        const fileData = fs.readFileSync(f.path);
+        const base64 = fileData.toString('base64');
+        return `data:${f.mimetype};base64,${base64}`;
+      } catch {
+        return `/uploads/${f.filename}`;
+      }
+    }
+    return `/uploads/${f.filename}`;
+  });
+
   res.json({
     success: true,
     urls,

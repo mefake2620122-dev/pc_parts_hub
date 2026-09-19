@@ -12,8 +12,9 @@ node_modules/
 dist/
 build/
 
-# Local database
-server/data/*.sqlite
+# Local database journal files
+server/data/*.sqlite-shm
+server/data/*.sqlite-wal
 server/data/*.sqlite-journal
 server/uploads/*
 !server/uploads/.gitkeep

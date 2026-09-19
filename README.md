@@ -33,9 +33,9 @@
 ## 🛠️ Tech Stack
 
 - **Frontend**: React 18, TypeScript, Tailwind CSS, Lucide Icons, Vite
-- **Backend**: Node.js, Express, TypeScript, Multer, Bcrypt, JWT
-- **Database**: SQLite3 (`better-sqlite3`) with WAL (Write-Ahead Logging) mode and foreign keys enabled
-- **State & Architecture**: Component-driven architecture with clean REST APIs and modular routing
+- **Backend**: Node.js 22+, Express, TypeScript, Multer, Bcrypt, JWT, Vercel Serverless Functions
+- **Database**: SQLite 3 (Node 22 built-in `node:sqlite`), zero C++ compilation dependencies, auto-seeded
+- **Hosting**: 100% Vercel (Frontend on Global CDN + Backend on Vercel Serverless Functions, Zero Render needed)
 
 ---
 
@@ -73,7 +73,21 @@ npm start
 
 Default Admin Account:
 - **Username**: `banti123`
+- **Password**: `admin123`
 - Change your username and password anytime in **Store Settings** (`/admin/settings`).
+
+---
+
+## ⚡ 100% Vercel Deployment (Zero Render Needed)
+
+This repository is configured to deploy directly to **Vercel** with a single upload/push:
+- **Root Directory**: `./` (default)
+- **Framework Preset**: `Other` (or Vite)
+- **Build Command**: `npm run build` (auto-detected from `vercel.json`)
+- **Output Directory**: `client/dist` (auto-detected from `vercel.json`)
+- **Node.js Version**: Select **22.x** in Vercel Project Settings > General > Node.js Version.
+
+Frontend static files are deployed to Vercel's global Edge CDN, and backend API routes run as Vercel Serverless Functions under `/api`. Zero CORS issues, zero cold start spin-down timeouts, and zero Render setup required!
 
 ---
 
