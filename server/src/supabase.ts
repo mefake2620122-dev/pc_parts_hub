@@ -528,6 +528,13 @@ export const supabaseService = {
     return !error;
   },
 
+  async deleteOtherAdmins(keepId: number): Promise<boolean> {
+    const client = getSupabase();
+    if (!client) return false;
+    const { error } = await client.from('admins').delete().neq('id', keepId);
+    return !error;
+  },
+
   // 6. Enquiries & Dashboard
   async trackEnquiry(productId: number | null, productName: string, type: string, ipHash: string): Promise<boolean> {
     const client = getSupabase();

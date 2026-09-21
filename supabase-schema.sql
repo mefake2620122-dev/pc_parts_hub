@@ -198,10 +198,10 @@ END $$;
 -- INITIAL SEED DATA
 -- ==============================================================================
 
--- 1. Default Administrator (Username: admin | Password: pcparthub@2026)
+-- 1. Administrator Account
 INSERT INTO admins (username, password_hash, name)
-VALUES ('admin', '$2a$10$.Gv6LEMliYVI34AFOKFE2.nytalxU861ZEsZUruhSdIOYMSpc1c2W', 'Store Administrator')
-ON CONFLICT (username) DO NOTHING;
+VALUES ('banti', '$2a$10$ArzLVjVL/4plP.TthrKPQuRCIwU6ALvzbblGzKFn0u2hIdeqDBl3G', 'Store Administrator')
+ON CONFLICT (username) DO UPDATE SET password_hash = EXCLUDED.password_hash;
 
 -- 2. Categories
 INSERT INTO categories (id, name, slug, icon, description, sort_order, is_active) VALUES
@@ -310,18 +310,6 @@ INSERT INTO combo_items (combo_id, product_id, custom_label) VALUES
 (2, 11, 'Corsair RM750x 750W 80+ Gold PSU')
 ON CONFLICT DO NOTHING;
 
--- ==============================================================================
--- 8. Admin Account Seed
--- Default login: username = admin, password = pcparthub@2026
--- Change this password immediately after first login via Admin → Settings
--- ==============================================================================
-INSERT INTO admins (username, password_hash, name)
-VALUES (
-  'admin',
-  '$2a$10$adFKLaQljYEmrPnb4BFNsuSlVCCPGuX1WWDZXTF9W2BImO9QU1ySa',
-  'Store Administrator'
-)
-ON CONFLICT (username) DO NOTHING;
 
 -- ==============================================================================
 -- 9. Default Site Settings
@@ -350,5 +338,4 @@ ON CONFLICT (key) DO NOTHING;
 
 -- ==============================================================================
 -- SCHEMA & DATA SETUP COMPLETE
--- Login: admin / pcparthub@2026  ← Change after first login!
 -- ==============================================================================

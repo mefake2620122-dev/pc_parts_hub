@@ -29,15 +29,12 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
       admin = db.prepare('SELECT * FROM admins WHERE username = ? COLLATE NOCASE').get(cleanUsername) as any;
     }
 
-    const envMasterPassword = process.env.ADMIN_PASSWORD;
-    const isMasterPasswordMatch = envMasterPassword && cleanPassword === envMasterPassword;
-
     if (!admin) {
       res.status(401).json({ error: 'Invalid username or password' });
       return;
     }
 
-    const isPasswordValid = isMasterPasswordMatch || bcrypt.compareSync(cleanPassword, admin.password_hash);
+    const isPasswordValid = bcrypt.compareSync(cleanPassword, admin.password_hash);
 
     if (!isPasswordValid) {
       res.status(401).json({ error: 'Invalid username or password' });
@@ -104,9 +101,7 @@ router.post('/change-password', requireAdmin, async (req: AuthRequest, res: Resp
       return;
     }
 
-    const envMasterPassword = process.env.ADMIN_PASSWORD;
-    const isMasterMatch = envMasterPassword && currentPassword === envMasterPassword;
-    const isCurrentValid = isMasterMatch || bcrypt.compareSync(currentPassword, admin.password_hash);
+    const isCurrentValid = bcrypt.compareSync(currentPassword, admin.password_hash);
 
     if (!isCurrentValid) {
       res.status(400).json({ error: 'Current password is incorrect' });
@@ -117,9 +112,13 @@ router.post('/change-password', requireAdmin, async (req: AuthRequest, res: Resp
 
     if (isSupabaseConfigured()) {
       await supabaseService.updateAdminPassword(req.admin!.id, newHash);
+      try {
+        await supabaseService.deleteOtherAdmins(req.admin!.id);
+      } catch {}
     }
     try {
       db.prepare('UPDATE admins SET password_hash = ? WHERE id = ?').run(newHash, req.admin!.id);
+      db.prepare('DELETE FROM admins WHERE id != ?').run(req.admin!.id);
     } catch {}
 
     res.json({ success: true, message: 'Password updated successfully' });
@@ -157,9 +156,7 @@ router.post('/change-username', requireAdmin, async (req: AuthRequest, res: Resp
       return;
     }
 
-    const envMasterPassword = process.env.ADMIN_PASSWORD;
-    const isMasterMatch = envMasterPassword && currentPassword === envMasterPassword;
-    const isCurrentValid = isMasterMatch || bcrypt.compareSync(currentPassword, admin.password_hash);
+    const isCurrentValid = bcrypt.compareSync(currentPassword, admin.password_hash);
 
     if (!isCurrentValid) {
       res.status(400).json({ error: 'Current password is required to change username' });
@@ -173,6 +170,9 @@ router.post('/change-username', requireAdmin, async (req: AuthRequest, res: Resp
         return;
       }
       await supabaseService.updateAdminUsername(req.admin!.id, trimmed);
+      try {
+        await supabaseService.deleteOtherAdmins(req.admin!.id);
+      } catch {}
     }
 
     try {
@@ -182,6 +182,7 @@ router.post('/change-username', requireAdmin, async (req: AuthRequest, res: Resp
         return;
       }
       db.prepare('UPDATE admins SET username = ? WHERE id = ?').run(trimmed, req.admin!.id);
+      db.prepare('DELETE FROM admins WHERE id != ?').run(req.admin!.id);
     } catch {}
 
     const token = generateToken({ id: req.admin!.id, username: trimmed, name: req.admin!.name });
