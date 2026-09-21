@@ -131,7 +131,7 @@ export const supabaseService = {
 
     let query = client
       .from('products')
-      .select('*, categories!inner(name, slug), product_images(image_url, is_primary, sort_order)');
+      .select('*, categories!inner(name, slug), product_images(image_url, is_primary, sort_order)', { count: 'exact' });
 
     if (params.category && params.category !== 'all') {
       query = query.eq('categories.slug', params.category);
@@ -189,7 +189,7 @@ export const supabaseService = {
 
     query = query.range(offset, offset + limit - 1);
 
-    const { data, error } = await query;
+    const { data, error, count: totalCount } = await query;
     if (error || !data) return { products: [], page, limit, count: 0 };
 
     const enriched = data.map((p: any) => {
@@ -214,7 +214,7 @@ export const supabaseService = {
       products: enriched,
       page,
       limit,
-      count: enriched.length
+      count: totalCount ?? enriched.length  // Total matching rows for pagination
     };
   },
 

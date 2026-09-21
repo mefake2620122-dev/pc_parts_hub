@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { db } from '../db.js';
 import { requireAdmin } from '../middleware/auth.js';
-import { isSupabaseConfigured, supabaseService } from '../supabase.js';
+import { isSupabaseConfigured, supabaseService, getSupabase } from '../supabase.js';
 
 const router = Router();
 
@@ -15,17 +15,40 @@ function slugify(text: string): string {
     .replace(/\-\-+/g, '-');
 }
 
-// Generate next product code based on category
-function generateProductCode(categorySlug: string): string {
+// Generate next product code — Supabase-aware (async)
+async function generateProductCode(categorySlug: string): Promise<string> {
   const prefix = (categorySlug.slice(0, 3) || 'PRD').toUpperCase();
+
+  if (isSupabaseConfigured()) {
+    const client = getSupabase();
+    if (client) {
+      try {
+        const { data } = await client
+          .from('products')
+          .select('product_code')
+          .like('product_code', `${prefix}-%`)
+          .order('id', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (!data) return `${prefix}-001`;
+        const match = data.product_code?.match(/-(\d+)$/);
+        if (match) {
+          const nextNum = parseInt(match[1], 10) + 1;
+          return `${prefix}-${String(nextNum).padStart(3, '0')}`;
+        }
+      } catch {}
+    }
+    return `${prefix}-${Date.now().toString().slice(-4)}`;
+  }
+
+  // SQLite fallback
   try {
     const latest = db
       .prepare('SELECT product_code FROM products WHERE product_code LIKE ? ORDER BY id DESC LIMIT 1')
       .get(`${prefix}-%`) as { product_code: string } | undefined;
 
-    if (!latest) {
-      return `${prefix}-001`;
-    }
+    if (!latest) return `${prefix}-001`;
     const match = latest.product_code.match(/-(\d+)$/);
     if (match) {
       const nextNum = parseInt(match[1], 10) + 1;
@@ -291,32 +314,61 @@ router.post('/', requireAdmin, async (req: Request, res: Response): Promise<void
     return;
   }
 
-  let catSlug = 'prd';
   try {
-    const cat = db.prepare('SELECT slug FROM categories WHERE id = ?').get(category_id) as { slug: string } | undefined;
-    if (cat?.slug) catSlug = cat.slug;
-  } catch {}
-
-  const code = product_code?.trim() || generateProductCode(catSlug);
-  let baseSlug = slugify(name);
-  let finalSlug = baseSlug;
-
-  const specsJson = typeof specifications === 'string' ? specifications : JSON.stringify(specifications);
-
-  try {
+    // Resolve category slug — Supabase-aware (needed for product code prefix)
+    let catSlug = 'prd';
     if (isSupabaseConfigured()) {
+      const client = getSupabase();
+      if (client) {
+        const { data: cat } = await client
+          .from('categories')
+          .select('slug')
+          .eq('id', Number(category_id))
+          .maybeSingle();
+        if (cat?.slug) catSlug = cat.slug;
+      }
+    } else {
+      try {
+        const cat = db.prepare('SELECT slug FROM categories WHERE id = ?').get(category_id) as { slug: string } | undefined;
+        if (cat?.slug) catSlug = cat.slug;
+      } catch {}
+    }
+
+    const code = product_code?.trim() || await generateProductCode(catSlug);
+    let baseSlug = slugify(name);
+    let finalSlug = baseSlug;
+    const specsJson = typeof specifications === 'string' ? specifications : JSON.stringify(specifications);
+
+    if (isSupabaseConfigured()) {
+      const client = getSupabase()!;
+
+      // Slug uniqueness check against Supabase
+      let counter = 1;
+      let slugExists = true;
+      while (slugExists) {
+        const { count } = await client
+          .from('products')
+          .select('id', { count: 'exact', head: true })
+          .eq('slug', finalSlug);
+        slugExists = (count ?? 0) > 0;
+        if (slugExists) {
+          finalSlug = `${baseSlug}-${counter}`;
+          counter++;
+        }
+      }
+
       const created = await supabaseService.createProduct({
         product_code: code,
         name: name.trim(),
         slug: finalSlug,
         category_id: Number(category_id),
-        brand: brand.trim(),
-        model: model.trim(),
+        brand: (brand || '').trim(),
+        model: (model || '').trim(),
         price: Number(price),
         condition,
         stock_status,
         quantity: Number(quantity),
-        description: description.trim(),
+        description: (description || '').trim(),
         specifications: typeof specifications === 'object' ? specifications : JSON.parse(specsJson || '{}'),
         is_featured: is_featured ? 1 : 0,
         is_new_arrival: is_new_arrival ? 1 : 0
@@ -331,6 +383,7 @@ router.post('/', requireAdmin, async (req: Request, res: Response): Promise<void
       return;
     }
 
+    // SQLite path — slug uniqueness check
     let counter = 1;
     while (db.prepare('SELECT id FROM products WHERE slug = ?').get(finalSlug)) {
       finalSlug = `${baseSlug}-${counter}`;
@@ -350,13 +403,13 @@ router.post('/', requireAdmin, async (req: Request, res: Response): Promise<void
       name.trim(),
       finalSlug,
       category_id,
-      brand.trim(),
-      model.trim(),
+      (brand || '').trim(),
+      (model || '').trim(),
       Number(price),
       condition,
       stock_status,
       Number(quantity),
-      description.trim(),
+      (description || '').trim(),
       specsJson,
       is_featured ? 1 : 0,
       is_new_arrival ? 1 : 0
@@ -515,20 +568,46 @@ router.post('/:id/duplicate', requireAdmin, async (req: Request, res: Response):
 
   try {
     if (isSupabaseConfigured()) {
+      const client = getSupabase()!;
       const original = await supabaseService.getProduct(numId);
       if (!original) {
         res.status(404).json({ error: 'Original product not found' });
         return;
       }
 
-      const newCode = `${original.product_code}-COPY`;
+      // Resolve category slug from Supabase for proper product code prefix
+      let catSlug = 'prd';
+      const { data: cat } = await client
+        .from('categories')
+        .select('slug')
+        .eq('id', original.category_id)
+        .maybeSingle();
+      if (cat?.slug) catSlug = cat.slug;
+
+      const newCode = await generateProductCode(catSlug);
       const newName = `${original.name} (Copy)`;
-      const newSlug = slugify(`${newName}-${Date.now().toString().slice(-4)}`);
+      let baseSlug = slugify(newName);
+      let finalSlug = baseSlug;
+
+      // Slug uniqueness check against Supabase
+      let counter = 1;
+      let slugExists = true;
+      while (slugExists) {
+        const { count } = await client
+          .from('products')
+          .select('id', { count: 'exact', head: true })
+          .eq('slug', finalSlug);
+        slugExists = (count ?? 0) > 0;
+        if (slugExists) {
+          finalSlug = `${baseSlug}-${counter}`;
+          counter++;
+        }
+      }
 
       const created = await supabaseService.createProduct({
         product_code: newCode,
         name: newName,
-        slug: newSlug,
+        slug: finalSlug,
         category_id: original.category_id,
         brand: original.brand,
         model: original.model,
@@ -542,19 +621,19 @@ router.post('/:id/duplicate', requireAdmin, async (req: Request, res: Response):
         is_new_arrival: 1
       }, (original.images || []).map((img: any) => img.image_url));
 
-      res.status(201).json({ success: true, id: created.id, slug: newSlug, product_code: newCode });
+      res.status(201).json({ success: true, id: created.id, slug: finalSlug, product_code: newCode });
       return;
     }
 
+    // SQLite path
     const original = db.prepare('SELECT * FROM products WHERE id = ?').get(id) as any;
-
     if (!original) {
       res.status(404).json({ error: 'Original product not found' });
       return;
     }
 
     const cat = db.prepare('SELECT slug FROM categories WHERE id = ?').get(original.category_id) as { slug: string };
-    const newCode = generateProductCode(cat.slug);
+    const newCode = await generateProductCode(cat?.slug || 'prd');
     const newName = `${original.name} (Copy)`;
     let baseSlug = slugify(newName);
     let finalSlug = baseSlug;
