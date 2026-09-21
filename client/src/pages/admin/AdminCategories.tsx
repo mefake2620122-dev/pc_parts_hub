@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Layers, Plus, Trash2, Edit, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Layers, Plus, Trash2, Edit, AlertCircle, CheckCircle2, Upload } from 'lucide-react';
 import { Category } from '../../types';
 import { api } from '../../services/api';
 
@@ -15,6 +15,8 @@ export const AdminCategories: React.FC = () => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [sortOrder, setSortOrder] = useState(0);
+  const [image, setImage] = useState('');
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   const fetchCats = async () => {
     try {
@@ -31,10 +33,28 @@ export const AdminCategories: React.FC = () => {
     fetchCats();
   }, []);
 
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingImage(true);
+    setError('');
+    try {
+      const res = await api.uploadImages([file]);
+      if (res.urls && res.urls[0]) {
+        setImage(res.urls[0]);
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to upload category image');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   const openAdd = () => {
     setEditingId(null);
     setName('');
     setDescription('');
+    setImage('');
     setSortOrder(categories.length + 1);
     setShowModal(true);
   };
@@ -43,6 +63,7 @@ export const AdminCategories: React.FC = () => {
     setEditingId(cat.id);
     setName(cat.name);
     setDescription(cat.description || '');
+    setImage((cat as any).image || '');
     setSortOrder(cat.sort_order || 0);
     setShowModal(true);
   };
@@ -52,10 +73,10 @@ export const AdminCategories: React.FC = () => {
     setError('');
     try {
       if (editingId) {
-        await api.updateCategory(editingId, { name, description, sort_order: sortOrder });
+        await api.updateCategory(editingId, { name, description, sort_order: sortOrder, image });
         setSuccess('Category updated');
       } else {
-        await api.createCategory({ name, description, sort_order: sortOrder });
+        await api.createCategory({ name, description, sort_order: sortOrder, image });
         setSuccess('Category created');
       }
       setShowModal(false);
@@ -204,6 +225,37 @@ export const AdminCategories: React.FC = () => {
                   onChange={(e) => setSortOrder(Number(e.target.value))}
                   className="w-full p-2.5 bg-[#f5f5f7] border border-black/8 rounded-xl text-sm text-[#1d1d1f] focus:outline-none focus:border-[#0071e3]"
                 />
+              </div>
+
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-[#6e6e73]">Category Tile Image</label>
+                  <label className="text-xs text-[#0071e3] hover:underline font-semibold cursor-pointer flex items-center gap-1">
+                    <Upload className="w-3 h-3" />
+                    <span>{uploadingImage ? 'Uploading...' : 'Upload Image'}</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleUpload}
+                      disabled={uploadingImage}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+                <div className="flex items-center gap-3">
+                  {image && (
+                    <div className="w-12 h-12 rounded-lg bg-[#f5f5f7] border border-black/5 p-1 shrink-0 overflow-hidden">
+                      <img src={image} alt="Preview" className="w-full h-full object-contain" />
+                    </div>
+                  )}
+                  <input
+                    type="url"
+                    value={image}
+                    onChange={(e) => setImage(e.target.value)}
+                    placeholder="https://... or click Upload Image above"
+                    className="w-full p-2.5 bg-[#f5f5f7] border border-black/8 rounded-xl text-xs font-mono text-[#1d1d1f] focus:outline-none focus:border-[#0071e3]"
+                  />
+                </div>
               </div>
 
               <div className="flex items-center justify-end gap-2 pt-2">

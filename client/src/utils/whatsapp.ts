@@ -1,7 +1,15 @@
 import type { Product, Combo } from '../types';
 import { contactConfig } from '../config/contact';
+import {
+  normalizePhoneNumber,
+  formatWhatsAppNumber,
+  formatDialerUrl,
+  formatPhoneDisplay,
+  DEFAULT_WA_FORMAT,
+} from './phone-normalizer';
 
 export { contactConfig, businessContact } from '../config/contact';
+export { normalizePhoneNumber, formatPhoneDisplay } from './phone-normalizer';
 
 /**
  * Formats a numeric price into INR currency display (e.g. ₹45,000).
@@ -12,110 +20,150 @@ export function formatPrice(num: number | undefined): string {
 }
 
 /**
- * Normalizes any phone number input into clean digits with country code for WhatsApp deep links.
- * Strips all spaces, +, -, (), and formatting characters.
- * Guarantees proper format: COUNTRYCODEPHONENUMBER (e.g. 919179527017).
+ * Backward compatibility alias for normalizing phone number into WhatsApp format
  */
 export function normalizeWhatsAppNumber(phone?: string): string {
-  let clean = (phone || contactConfig.whatsappNumber || '').replace(/[^0-9]/g, '');
-  if (!clean) {
-    clean = (contactConfig.whatsappNumber || '919179527017').replace(/[^0-9]/g, '');
-  }
-
-  // If 10 digits (standard Indian mobile number without country code), prepend 91
-  if (clean.length === 10) {
-    clean = '91' + clean;
-  } else if (clean.length === 11 && clean.startsWith('0')) {
-    clean = '91' + clean.slice(1);
-  }
-
-  return clean;
+  return formatWhatsAppNumber(phone || contactConfig.whatsappNumber);
 }
 
 /**
- * Normalizes a phone number for the telephone URI (tel:+91XXXXXXXXXX).
- * Strips spaces, hyphens, and brackets. Preserves leading '+'.
+ * Backward compatibility alias for telephone URI format
  */
 export function normalizeDialerNumber(phone?: string): string {
-  let clean = (phone || contactConfig.phoneNumber || '').replace(/[^0-9+]/g, '');
-  if (!clean) {
-    clean = contactConfig.phoneNumber || '+919179527017';
-  }
+  return normalizePhoneNumber(phone || contactConfig.phoneNumber).e164;
+}
 
-  if (!clean.startsWith('+')) {
-    const digits = clean.replace(/[^0-9]/g, '');
-    if (digits.length === 10) {
-      clean = '+91' + digits;
-    } else if (digits.length === 12 && digits.startsWith('91')) {
-      clean = '+' + digits;
-    } else {
-      clean = '+' + digits;
+/**
+ * Pure native WhatsApp URL scheme (whatsapp://send?phone=...&text=...)
+ * Directly launches the native WhatsApp client on Android & iOS.
+ */
+export function getNativeWhatsAppUrl(arg1?: string, arg2?: string): string {
+  const { phone, message } = parseArgs(arg1, arg2);
+  const num = formatWhatsAppNumber(phone || contactConfig.whatsappNumber);
+  const msg = message || contactConfig.defaultWhatsAppMessage;
+  return `whatsapp://send?phone=${num}&text=${encodeURIComponent(msg)}`;
+}
+
+/**
+ * Smart Universal WhatsApp Deep Link Generator
+ * Ported from day1 architecture:
+ * - On Mobile: launches native WhatsApp app via `whatsapp://send?phone=...&text=...`
+ * - On Desktop: launches official Web/Desktop gateway via `https://api.whatsapp.com/send/?phone=...&text=...`
+ * 
+ * Supports flexible argument signatures:
+ * - getWhatsAppUrl(phone, message)
+ * - getWhatsAppUrl(message, phone)
+ */
+export function getWhatsAppUrl(arg1?: string, arg2?: string): string {
+  const { phone, message } = parseArgs(arg1, arg2);
+  const num = formatWhatsAppNumber(phone || contactConfig.whatsappNumber);
+  const msg = message || contactConfig.defaultWhatsAppMessage;
+  const encoded = encodeURIComponent(msg);
+
+  // On Mobile: dispatch directly to native WhatsApp app
+  if (typeof window !== 'undefined' && typeof navigator !== 'undefined') {
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
+    if (isMobile) {
+      return `whatsapp://send?phone=${num}&text=${encoded}`;
     }
   }
 
-  return clean;
+  // On Desktop / Laptop: Official WhatsApp Web & Desktop gateway
+  return `https://api.whatsapp.com/send/?phone=${num}&text=${encoded}`;
 }
 
 /**
- * Generates the official WhatsApp deep link:
- * https://wa.me/COUNTRYCODEPHONENUMBER?text=ENCODED_MESSAGE
- *
- * Fully URL-encodes messages to safely handle spaces, ₹ symbols, quotes, and punctuation.
- * Native link behavior on mobile directly launches the WhatsApp app.
- * On desktop, it opens WhatsApp Web / handler.
+ * Helper to dynamically determine whether arg1 or arg2 is the phone number
  */
-export function getWhatsAppUrl(phone?: string, message?: string): string {
-  const cleanPhone = normalizeWhatsAppNumber(phone);
-  const msg = message !== undefined ? message : contactConfig.defaultWhatsAppMessage;
-  if (!msg) {
-    return `https://wa.me/${cleanPhone}`;
+function parseArgs(arg1?: string, arg2?: string): { phone: string; message: string } {
+  const defaultPhone = contactConfig.whatsappNumber || DEFAULT_WA_FORMAT;
+  const defaultMsg = contactConfig.defaultWhatsAppMessage || 'Hello PC PART HUB, I have an enquiry regarding hardware.';
+
+  if (!arg1 && !arg2) {
+    return { phone: defaultPhone, message: defaultMsg };
   }
-  const encodedMsg = encodeURIComponent(msg);
-  return `https://wa.me/${cleanPhone}?text=${encodedMsg}`;
+
+  if (arg1 && !arg2) {
+    if (isPhoneNumber(arg1)) {
+      return { phone: arg1, message: defaultMsg };
+    }
+    return { phone: defaultPhone, message: arg1 };
+  }
+
+  // Both args are present
+  if (isPhoneNumber(arg1!)) {
+    return { phone: arg1!, message: arg2 || defaultMsg };
+  }
+  return { phone: arg2!, message: arg1! };
+}
+
+function isPhoneNumber(str: string): boolean {
+  if (!str) return false;
+  // If it starts with + or has only digits, spaces, hyphens, and parentheses
+  const cleaned = str.replace(/[\s\-()+]/g, '');
+  return /^\d{7,15}$/.test(cleaned);
 }
 
 /**
  * Generates standard telephone URI for dialer:
  * tel:+91XXXXXXXXXX
+ * 
+ * CRITICAL RULE (from day1):
+ * NEVER use target="_blank" with tel: links — it breaks iOS and Android native phone dialers!
  */
 export function getDialerUrl(phone?: string): string {
-  return `tel:${normalizeDialerNumber(phone)}`;
+  return formatDialerUrl(phone || contactConfig.phoneNumber);
 }
 
 /**
  * Generates a contextual inquiry message for a specific product.
- * Includes product name and formatted price when available.
  */
 export function generateProductWhatsAppMessage(
   product: Pick<Product, 'name'> & Partial<Product>,
-  _businessName?: string
+  storeName?: string
 ): string {
-  if (product.stock_status === 'SOLD_OUT') {
-    const codePart = product.product_code ? ` (Code: ${product.product_code})` : '';
-    return `Hi, I saw that the ${product.name}${codePart} is currently Sold Out. Do you have any similar hardware coming in stock soon?`;
+  const brand = storeName || contactConfig.businessName;
+  let msg = `Hello ${brand}, I am interested in purchasing:\n\n`;
+  msg += `*${product.name}*\n`;
+
+  if (product.product_code) {
+    msg += `• Product Code: ${product.product_code}\n`;
+  }
+  if (product.condition) {
+    msg += `• Condition: ${product.condition}\n`;
+  }
+  if (product.price) {
+    msg += `• Price: ${formatPrice(product.price)}\n`;
+  }
+  if (product.stock_status) {
+    msg += `• Status: ${product.stock_status.replace('_', ' ')}\n`;
   }
 
-  const priceStr = product.price ? ` (${formatPrice(product.price)})` : '';
-  const codeStr = product.product_code ? ` [Code: ${product.product_code}]` : '';
-  return `Hi, I'm interested in the ${product.name}${codeStr}${priceStr}. Please share more details.`;
+  msg += `\nIs this unit available for inspection / store pickup in Nehru Place?`;
+  return msg;
 }
 
 /**
- * Generates a contextual inquiry message for a combo package.
+ * Generates a contextual inquiry message for a PC Build Combo.
  */
 export function generateComboWhatsAppMessage(
-  combo: Partial<Combo> & { name?: string; title?: string; price?: number },
-  _businessName?: string
+  combo: Pick<Combo, 'title' | 'price'>,
+  storeName?: string
 ): string {
-  const title = combo.title || combo.name || 'Build Package';
-  const priceStr = combo.price ? ` (${formatPrice(combo.price)})` : '';
-  return `Hi, I'm interested in the ${title} build bundle${priceStr}. Please share more details.`;
+  const brand = storeName || contactConfig.businessName;
+  let msg = `Hello ${brand}, I am interested in the custom PC build combo:\n\n`;
+  msg += `*${combo.title}*\n`;
+  msg += `• Combo Price: ${formatPrice(combo.price)}\n\n`;
+  msg += `Please share the full component breakdown, testing reports, and availability.`;
+  return msg;
 }
 
 /**
  * Generates a general store enquiry message.
  */
-export function generateGeneralWhatsAppMessage(businessName?: string): string {
-  const name = businessName || contactConfig.businessName;
-  return `Hello ${name}, I would like to enquire about available PC components for my custom build.`;
+export function generateGeneralWhatsAppMessage(storeName?: string): string {
+  const brand = storeName || contactConfig.businessName;
+  return `Hello ${brand}, I am looking for pre-owned PC hardware components in Nehru Place. Please share today's available inventory and pricing.`;
 }

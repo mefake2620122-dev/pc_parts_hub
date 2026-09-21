@@ -33,21 +33,27 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
     };
   }, [isOpen]);
 
+  const [searchError, setSearchError] = useState(false);
+
   // Live search debounced
   useEffect(() => {
     if (!query.trim()) {
       setResults([]);
+      setSearchError(false);
       return;
     }
 
     const timer = setTimeout(async () => {
       setLoading(true);
+      setSearchError(false);
       try {
         const res = await productService.getAll({ q: query.trim(), limit: 8 });
         setResults(res.products || []);
         setSelectedIndex(0);
       } catch (err) {
         console.error('Search error:', err);
+        setSearchError(true);
+        setResults([]);
       } finally {
         setLoading(false);
       }
@@ -230,8 +236,18 @@ export default function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
           </div>
         )}
 
+        {/* Error State */}
+        {!loading && query && searchError && (
+          <div className="py-12 px-4 text-center">
+            <p className="text-sm font-semibold text-rose-600 mb-1">Unable to connect to inventory</p>
+            <p className="text-xs text-[#86868b] max-w-sm mx-auto">
+              We couldn't connect to the backend server. Please verify your connection or chat directly with our store team on WhatsApp.
+            </p>
+          </div>
+        )}
+
         {/* Empty State */}
-        {!loading && query && results.length === 0 && (
+        {!loading && query && !searchError && results.length === 0 && (
           <div className="py-12 px-4 text-center">
             <p className="text-sm font-semibold text-[#1d1d1f] mb-1">No hardware found</p>
             <p className="text-xs text-[#86868b] max-w-sm mx-auto">

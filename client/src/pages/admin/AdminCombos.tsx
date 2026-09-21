@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Boxes, Plus, Trash2, Edit, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Boxes, Plus, Trash2, Edit, AlertCircle, CheckCircle2, Upload } from 'lucide-react';
 import { Combo } from '../../types';
 import { api } from '../../services/api';
 import { formatPrice } from '../../utils/whatsapp';
@@ -18,6 +18,24 @@ export const AdminCombos: React.FC = () => {
   const [price, setPrice] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [items, setItems] = useState<string[]>(['']);
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadingImage(true);
+    setError('');
+    try {
+      const res = await api.uploadImages([file]);
+      if (res.urls && res.urls[0]) {
+        setImageUrl(res.urls[0]);
+      }
+    } catch (err: any) {
+      setError(err.message || 'Failed to upload combo image');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
 
   const fetchCombos = async () => {
     try {
@@ -233,14 +251,34 @@ export const AdminCombos: React.FC = () => {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[#6e6e73]">Image URL</label>
-                <input
-                  type="url"
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                  placeholder="https://..."
-                  className="w-full p-2.5 bg-[#f5f5f7] border border-black/8 rounded-xl text-sm text-[#1d1d1f] focus:outline-none focus:border-[#0071e3]"
-                />
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-semibold text-[#6e6e73]">Combo Showcase Image</label>
+                  <label className="text-xs text-[#0071e3] hover:underline font-semibold cursor-pointer flex items-center gap-1">
+                    <Upload className="w-3 h-3" />
+                    <span>{uploadingImage ? 'Uploading...' : 'Upload Image'}</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      disabled={uploadingImage}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+                <div className="flex items-center gap-3">
+                  {imageUrl && (
+                    <div className="w-12 h-12 rounded-lg bg-[#f5f5f7] border border-black/5 p-1 shrink-0 overflow-hidden">
+                      <img src={imageUrl} alt="Preview" className="w-full h-full object-contain" />
+                    </div>
+                  )}
+                  <input
+                    type="url"
+                    value={imageUrl}
+                    onChange={(e) => setImageUrl(e.target.value)}
+                    placeholder="https://... or click Upload Image above"
+                    className="w-full p-2.5 bg-[#f5f5f7] border border-black/8 rounded-xl text-xs font-mono text-[#1d1d1f] focus:outline-none focus:border-[#0071e3]"
+                  />
+                </div>
               </div>
 
               <div className="space-y-1.5">

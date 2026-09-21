@@ -128,22 +128,22 @@ export const Home: React.FC<HomeProps> = ({ settings }) => {
               {/* Eyebrow badge */}
               <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#f5f5f7] border border-black/5 text-xs font-semibold tracking-widest text-[#86868b] uppercase">
                 <Sparkles className="w-3.5 h-3.5 text-[#0071e3]" />
-                <span>PC PART HUB</span>
+                <span>{settings?.hero_badge || 'PC PART HUB'}</span>
               </div>
 
               {/* Headlines */}
               <div className="space-y-3">
                 <h1 className="text-4xl sm:text-6xl lg:text-6xl font-extrabold text-[#1d1d1f] tracking-tight leading-[1.08]">
-                  Power Your Next Build.
+                  {settings?.hero_title || 'Power Your Next Build.'}
                 </h1>
                 <p className="text-lg sm:text-2xl font-medium text-[#424245] leading-snug">
-                  Quality pre-owned PC hardware, ready for your next setup.
+                  {settings?.hero_subtitle || 'Quality pre-owned PC hardware, ready for your next setup.'}
                 </p>
               </div>
 
               {/* Supporting Copy */}
               <p className="text-sm sm:text-base text-[#86868b] max-w-lg mx-auto lg:mx-0 leading-relaxed">
-                Explore available components, compare specifications and connect directly with PC Part Hub for live stock confirmation and store pickup.
+                {settings?.hero_desc || 'Explore available components, compare specifications and connect directly with PC Part Hub for live stock confirmation and store pickup.'}
               </p>
 
               {/* Action Buttons */}
@@ -192,10 +192,10 @@ export const Home: React.FC<HomeProps> = ({ settings }) => {
                   transform: `perspective(1000px) rotateY(${mousePos.x * 6}deg) rotateX(${-mousePos.y * 6}deg)`
                 }}
               >
-                {/* Foreground Primary Hardware Image (GPU) */}
+                {/* Foreground Primary Hardware Image */}
                 <img
-                  src="https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=1000&q=80"
-                  alt="Flagship Graphics Card"
+                  src={settings?.hero_image || "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?auto=format&fit=crop&w=1000&q=80"}
+                  alt={settings?.hero_title || "Flagship Hardware"}
                   className="w-full h-full object-contain filter drop-shadow-[0_20px_25px_rgba(0,0,0,0.15)] select-none transition-transform duration-500 hover:scale-105"
                 />
 
@@ -207,7 +207,7 @@ export const Home: React.FC<HomeProps> = ({ settings }) => {
                   }}
                 >
                   <span className="w-2 h-2 rounded-full bg-[#0071e3]" />
-                  <span>RTX SERIES</span>
+                  <span>{settings?.hero_chip1_tag || 'RTX SERIES'}</span>
                 </div>
 
                 {/* Floating Apple-Style Spec Chip 2 (Top Right) */}
@@ -217,8 +217,8 @@ export const Home: React.FC<HomeProps> = ({ settings }) => {
                     transform: `translate(${mousePos.x * 14}px, ${mousePos.y * -14}px)`
                   }}
                 >
-                  <span className="text-[10px] sm:text-[11px] font-mono text-[#86868b]">VRAM</span>
-                  <span>12GB GDDR6</span>
+                  <span className="text-[10px] sm:text-[11px] font-mono text-[#86868b]">{settings?.hero_chip2_label || 'VRAM'}</span>
+                  <span>{settings?.hero_chip2_val || '12GB GDDR6'}</span>
                 </div>
 
                 {/* Floating Apple-Style Spec Chip 3 (Bottom Left) */}
@@ -229,7 +229,7 @@ export const Home: React.FC<HomeProps> = ({ settings }) => {
                   }}
                 >
                   <CheckCircle2 className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-emerald-600" />
-                  <span>STRESS TESTED</span>
+                  <span>{settings?.hero_chip3_text || 'STRESS TESTED'}</span>
                 </div>
 
                 {/* Floating Apple-Style Spec Chip 4 (Bottom Right) */}
@@ -240,7 +240,7 @@ export const Home: React.FC<HomeProps> = ({ settings }) => {
                   }}
                 >
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span>IN STOCK</span>
+                  <span>{settings?.hero_chip4_text || 'IN STOCK'}</span>
                 </div>
               </div>
 
@@ -254,23 +254,23 @@ export const Home: React.FC<HomeProps> = ({ settings }) => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 p-6 sm:p-8 rounded-3xl bg-[#f5f5f7] border border-black/5">
           {[
             {
-              title: 'LARGE INVENTORY',
-              desc: 'Browse over 100+ stress-tested parts in active rotation.',
+              title: settings?.trust_card_1_title || 'LARGE INVENTORY',
+              desc: settings?.trust_card_1_desc || 'Browse over 100+ stress-tested parts in active rotation.',
               icon: Layers,
             },
             {
-              title: 'REAL HARDWARE',
-              desc: '100% genuine components with verified stress benchmarks.',
+              title: settings?.trust_card_2_title || 'REAL HARDWARE',
+              desc: settings?.trust_card_2_desc || '100% genuine components with verified stress benchmarks.',
               icon: ShieldCheck,
             },
             {
-              title: 'CLEAR SPECS',
-              desc: 'Transparent condition photos and exact technical ratings.',
+              title: settings?.trust_card_3_title || 'CLEAR SPECS',
+              desc: settings?.trust_card_3_desc || 'Transparent condition photos and exact technical ratings.',
               icon: CheckCircle2,
             },
             {
-              title: 'DIRECT WHATSAPP',
-              desc: 'Fast technician response and seamless in-store pickup.',
+              title: settings?.trust_card_4_title || 'DIRECT WHATSAPP',
+              desc: settings?.trust_card_4_desc || 'Fast technician response and seamless in-store pickup.',
               icon: MessageSquare,
             },
           ].map((item, i) => {

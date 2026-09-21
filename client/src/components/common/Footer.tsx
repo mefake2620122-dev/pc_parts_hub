@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Cpu, Phone, MessageSquare, MapPin, Clock, ShieldCheck, Lock } from 'lucide-react';
 import { SiteSettings } from '../../types';
-import { getWhatsAppUrl, getDialerUrl, generateGeneralWhatsAppMessage, contactConfig } from '../../utils/whatsapp';
+import { getWhatsAppUrl, getDialerUrl, generateGeneralWhatsAppMessage, contactConfig, formatPhoneDisplay } from '../../utils/whatsapp';
 
 interface FooterProps {
   settings?: SiteSettings;
@@ -89,7 +89,7 @@ export const Footer: React.FC<FooterProps> = ({ settings }) => {
                 className="flex items-center gap-2 text-emerald-700 hover:text-emerald-800 font-semibold transition-colors text-left"
               >
                 <MessageSquare className="w-3.5 h-3.5" />
-                <span>WhatsApp: {phone}</span>
+                <span>WhatsApp: {formatPhoneDisplay(whatsapp)}</span>
               </a>
               <a
                 href={getDialerUrl(phone)}
@@ -97,7 +97,7 @@ export const Footer: React.FC<FooterProps> = ({ settings }) => {
                 className="flex items-center gap-2 text-[#1d1d1f] hover:text-[#0071e3] font-medium transition-colors text-left"
               >
                 <Phone className="w-3.5 h-3.5 text-[#0071e3]" />
-                <span>Call Shop: {phone}</span>
+                <span>Call Shop: {formatPhoneDisplay(phone)}</span>
               </a>
               <div className="flex items-start gap-2 pt-1 text-[#86868b]">
                 <MapPin className="w-3.5 h-3.5 shrink-0 mt-0.5 text-[#6e6e73]" />

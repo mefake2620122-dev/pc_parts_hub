@@ -1,7 +1,7 @@
 import React from 'react';
 import { MapPin, Phone, MessageSquare, Clock, ExternalLink, ShieldCheck } from 'lucide-react';
 import { SiteSettings } from '../types';
-import { getWhatsAppUrl, getDialerUrl, generateGeneralWhatsAppMessage, contactConfig } from '../utils/whatsapp';
+import { getWhatsAppUrl, getDialerUrl, generateGeneralWhatsAppMessage, contactConfig, formatPhoneDisplay } from '../utils/whatsapp';
 import { SEO } from '../components/common/SEO';
 
 interface ContactProps {
@@ -78,7 +78,7 @@ export const Contact: React.FC<ContactProps> = ({ settings }) => {
               Call our shop directly during operating hours for immediate stock inquiries and technical questions.
             </p>
             <p className="text-xs font-mono text-[#0071e3] font-semibold">
-              {phone}
+              {formatPhoneDisplay(phone)}
             </p>
           </div>
 

@@ -4,6 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 import { requireAdmin } from '../middleware/auth.js';
+import { isSupabaseConfigured, supabaseService } from '../supabase.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -53,26 +54,49 @@ const upload = multer({
 const router = Router();
 
 // POST /api/upload - Single or Multiple Image Upload
-router.post('/', requireAdmin, upload.array('images', 10), (req: Request, res: Response): void => {
+router.post('/', requireAdmin, upload.array('images', 10), async (req: Request, res: Response): Promise<void> => {
   const files = req.files as Express.Multer.File[];
   if (!files || files.length === 0) {
     res.status(400).json({ error: 'No files uploaded' });
     return;
   }
 
-  const urls = files.map(f => {
-    // On Vercel, Base64 data URL ensures zero loss across serverless container restarts
+  const urls: string[] = [];
+
+  for (const f of files) {
+    let uploadedUrl: string | null = null;
+
+    // 1. If Supabase is configured, upload directly to Supabase Storage bucket 'pc-parts-images'
+    if (isSupabaseConfigured() && f.path && fs.existsSync(f.path)) {
+      try {
+        const fileBuffer = fs.readFileSync(f.path);
+        uploadedUrl = await supabaseService.uploadImage(f.filename, fileBuffer, f.mimetype);
+      } catch (err) {
+        console.warn('Supabase image upload failed, falling back to local/data URL:', err);
+      }
+    }
+
+    if (uploadedUrl) {
+      urls.push(uploadedUrl);
+      continue;
+    }
+
+    // 2. On Vercel, Base64 data URL ensures zero loss across serverless container restarts if Supabase storage is not ready
     if (isVercel && f.path && fs.existsSync(f.path)) {
       try {
         const fileData = fs.readFileSync(f.path);
         const base64 = fileData.toString('base64');
-        return `data:${f.mimetype};base64,${base64}`;
+        urls.push(`data:${f.mimetype};base64,${base64}`);
+        continue;
       } catch {
-        return `/uploads/${f.filename}`;
+        urls.push(`/uploads/${f.filename}`);
+        continue;
       }
     }
-    return `/uploads/${f.filename}`;
-  });
+
+    // 3. Local disk fallback
+    urls.push(`/uploads/${f.filename}`);
+  }
 
   res.json({
     success: true,

@@ -6,6 +6,7 @@ import { api } from './services/api';
 import { GlassNavbar } from './components/common/GlassNavbar';
 import { MobileBottomBar } from './components/common/MobileBottomBar';
 import { Footer } from './components/common/Footer';
+import { WhatsAppGlobalHandler } from './components/common/WhatsAppGlobalHandler';
 
 // Public Pages
 import { Home } from './pages/Home';
@@ -69,6 +70,10 @@ export function App() {
 
   return (
     <BrowserRouter>
+      <WhatsAppGlobalHandler
+        defaultPhone={settings?.whatsapp}
+        defaultMsg={settings?.business_name ? `Hello ${settings.business_name}, I have an enquiry regarding hardware.` : undefined}
+      />
       <ScrollToTop />
       <Routes>
         

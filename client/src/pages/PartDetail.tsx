@@ -18,6 +18,7 @@ import StatusBadge from '../components/common/StatusBadge';
 import { SEO } from '../components/common/SEO';
 import {
   formatPrice,
+  formatPhoneDisplay,
   getWhatsAppUrl,
   getDialerUrl,
   generateProductWhatsAppMessage,
@@ -294,7 +295,7 @@ export const PartDetail: React.FC<PartDetailProps> = ({ settings }) => {
               className="w-full py-3 px-6 rounded-full btn-apple-secondary text-sm font-semibold flex items-center justify-center gap-2"
             >
               <Phone className="w-4 h-4 text-[#0071e3]" />
-              <span>Call Store ({phoneNum})</span>
+              <span>Call Store ({formatPhoneDisplay(phoneNum)})</span>
             </a>
           </div>
 
