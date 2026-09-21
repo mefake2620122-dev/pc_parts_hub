@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
-import { db } from '../db.js';
 import { requireAdmin } from '../middleware/auth.js';
+import { getSupabase, supabaseService } from '../supabase.js';
 
 const router = Router();
 
@@ -52,7 +52,7 @@ Corsair Vengeance LPX 16GB DDR4,ram,Corsair,LPX Black,2400,Excellent,IN_STOCK,5,
 });
 
 // POST /api/import/preview - Validate and preview CSV rows
-router.post('/preview', requireAdmin, (req: Request, res: Response): void => {
+router.post('/preview', requireAdmin, async (req: Request, res: Response): Promise<void> => {
   const { csvContent } = req.body;
   if (!csvContent || typeof csvContent !== 'string') {
     res.status(400).json({ error: 'csvContent string is required' });
@@ -65,10 +65,18 @@ router.post('/preview', requireAdmin, (req: Request, res: Response): void => {
     return;
   }
 
+  const client = getSupabase();
+  if (!client) {
+    res.status(500).json({ error: 'Supabase is not configured' });
+    return;
+  }
+
   const headers = parseCSVLine(lines[0]).map(h => h.toLowerCase().replace(/[^a-z0-9]/g, ''));
-  const categories = db.prepare('SELECT id, name, slug FROM categories').all() as { id: number; name: string; slug: string }[];
+  const { data: categories } = await client.from('categories').select('id, name, slug');
+  const catList = categories || [];
+
   const catMap = new Map<string, number>();
-  categories.forEach(c => {
+  catList.forEach(c => {
     catMap.set(c.slug.toLowerCase(), c.id);
     catMap.set(c.name.toLowerCase(), c.id);
     catMap.set(c.slug.split('-')[0].toLowerCase(), c.id);
@@ -96,7 +104,7 @@ router.post('/preview', requireAdmin, (req: Request, res: Response): void => {
     const imageUrl = rowObj['imageurl'] || rowObj['image'] || values[9] || '';
 
     const price = parseFloat(rawPrice.replace(/[^0-9.]/g, ''));
-    const categoryId = catMap.get(rawCategory) || categories[0]?.id;
+    const categoryId = catMap.get(rawCategory) || catList[0]?.id;
 
     const rowErrors: string[] = [];
     if (!name.trim()) rowErrors.push('Product name is required');
@@ -115,7 +123,7 @@ router.post('/preview', requireAdmin, (req: Request, res: Response): void => {
       validRows.push({
         name: name.trim(),
         category_id: categoryId,
-        category_name: categories.find(c => c.id === categoryId)?.name || 'Components',
+        category_name: catList.find(c => c.id === categoryId)?.name || 'Components',
         brand: brand.trim(),
         model: model.trim(),
         price,
@@ -137,57 +145,60 @@ router.post('/preview', requireAdmin, (req: Request, res: Response): void => {
   });
 });
 
-// POST /api/import/confirm - Batch insert valid rows
-router.post('/confirm', requireAdmin, (req: Request, res: Response): void => {
+// POST /api/import/confirm - Batch insert valid rows into Supabase
+router.post('/confirm', requireAdmin, async (req: Request, res: Response): Promise<void> => {
   const { rows } = req.body;
   if (!Array.isArray(rows) || rows.length === 0) {
     res.status(400).json({ error: 'No rows to import' });
     return;
   }
 
-  const insertProduct = db.prepare(`
-    INSERT INTO products (
-      product_code, name, slug, category_id, brand, model, price,
-      condition, stock_status, quantity, description, specifications,
-      is_featured, is_new_arrival, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 1, CURRENT_TIMESTAMP)
-  `);
-
-  const insertImage = db.prepare(`
-    INSERT INTO product_images (product_id, image_url, is_primary, sort_order)
-    VALUES (?, ?, 1, 0)
-  `);
+  const client = getSupabase();
+  if (!client) {
+    res.status(500).json({ error: 'Supabase client is not available' });
+    return;
+  }
 
   let insertedCount = 0;
-  const runTransaction = db.transaction((items: any[]) => {
-    for (const r of items) {
-      const code = `IMP-${Date.now().toString().slice(-4)}${Math.floor(Math.random() * 900 + 100)}`;
-      let baseSlug = slugify(r.name);
-      let finalSlug = `${baseSlug}-${Math.floor(Math.random() * 9000 + 1000)}`;
+  for (const r of rows) {
+    const code = `IMP-${Date.now().toString().slice(-4)}${Math.floor(Math.random() * 900 + 100)}`;
+    let baseSlug = slugify(r.name);
+    let finalSlug = `${baseSlug}-${Math.floor(Math.random() * 9000 + 1000)}`;
 
-      const res = insertProduct.run(
-        code,
-        r.name,
-        finalSlug,
-        r.category_id,
-        r.brand || 'Generic',
-        r.model || '',
-        Number(r.price),
-        r.condition || 'Excellent',
-        r.stock_status || 'IN_STOCK',
-        Number(r.quantity) || 1,
-        r.description || '',
-        '{}'
-      );
-      const prodId = res.lastInsertRowid;
+    const { data: prodData, error: prodErr } = await client
+      .from('products')
+      .insert([{
+        product_code: code,
+        name: r.name,
+        slug: finalSlug,
+        category_id: r.category_id,
+        brand: r.brand || 'Generic',
+        model: r.model || '',
+        price: Number(r.price),
+        condition: r.condition || 'Excellent',
+        stock_status: r.stock_status || 'IN_STOCK',
+        quantity: Number(r.quantity) || 1,
+        description: r.description || '',
+        specifications: {},
+        is_featured: 0,
+        is_new_arrival: 1
+      }])
+      .select('id')
+      .single();
+
+    if (!prodErr && prodData) {
       if (r.image_url) {
-        insertImage.run(prodId, r.image_url);
+        await client.from('product_images').insert([{
+          product_id: prodData.id,
+          image_url: r.image_url,
+          is_primary: 1,
+          sort_order: 0
+        }]);
       }
       insertedCount++;
     }
-  });
+  }
 
-  runTransaction(rows);
   res.json({ success: true, count: insertedCount });
 });
 

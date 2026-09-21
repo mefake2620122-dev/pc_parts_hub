@@ -4,8 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
 
-import { initDatabase } from './db.js';
-import { seedDatabase } from './seed.js';
+import { isSupabaseConfigured } from './supabase.js';
 
 import authRoutes from './routes/auth.js';
 import productRoutes from './routes/products.js';
@@ -19,12 +18,10 @@ import enquiryRoutes from './routes/enquiries.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Initialize DB and Seed data
-try {
-  initDatabase();
-  seedDatabase();
-} catch (err) {
-  console.error('Error during database initialization/seeding:', err);
+if (!isSupabaseConfigured()) {
+  console.warn('⚠️  WARNING: Supabase is not configured! Check SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env');
+} else {
+  console.log('✅ Supabase PostgreSQL Database Connected');
 }
 
 export const app = express();

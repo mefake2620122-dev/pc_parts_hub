@@ -1,12 +1,11 @@
 import { Router, Request, Response } from 'express';
 import bcrypt from 'bcryptjs';
-import { db } from '../db.js';
 import { generateToken, requireAdmin, AuthRequest } from '../middleware/auth.js';
-import { isSupabaseConfigured, supabaseService } from '../supabase.js';
+import { supabaseService } from '../supabase.js';
 
 const router = Router();
 
-// POST /api/auth/login - Secure Admin Login
+// POST /api/auth/login - Secure Admin Login via Supabase
 router.post('/login', async (req: Request, res: Response): Promise<void> => {
   const { username, password } = req.body;
 
@@ -19,13 +18,7 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
   const cleanPassword = String(password);
 
   try {
-    let admin: { id: number; username: string; password_hash: string; name: string } | null = null;
-
-    if (isSupabaseConfigured()) {
-      admin = await supabaseService.getAdminByUsername(cleanUsername);
-    } else {
-      admin = db.prepare('SELECT * FROM admins WHERE username = ? COLLATE NOCASE').get(cleanUsername) as any;
-    }
+    const admin = await supabaseService.getAdminByUsername(cleanUsername);
 
     if (!admin) {
       res.status(401).json({ error: 'Invalid username or password' });
@@ -57,21 +50,22 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
 // GET /api/auth/me - Check current admin session
 router.get('/me', requireAdmin, async (req: AuthRequest, res: Response): Promise<void> => {
   try {
-    let admin: any = null;
-    if (isSupabaseConfigured()) {
-      admin = await supabaseService.getAdminById(req.admin!.id);
-    } else {
-      admin = db.prepare('SELECT id, username, name, created_at FROM admins WHERE id = ?').get(req.admin!.id);
-    }
+    const admin = await supabaseService.getAdminById(req.admin!.id);
 
     if (!admin) {
-      res.status(404).json({ error: 'Admin account not found' });
+      res.status(401).json({ error: 'Admin not found or token invalid' });
       return;
     }
 
-    res.json({ admin });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to verify session' });
+    res.json({
+      admin: {
+        id: admin.id,
+        username: admin.username,
+        name: admin.name
+      }
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message || 'Authentication check failed' });
   }
 });
 
@@ -79,18 +73,18 @@ router.get('/me', requireAdmin, async (req: AuthRequest, res: Response): Promise
 router.post('/change-password', requireAdmin, async (req: AuthRequest, res: Response): Promise<void> => {
   const { currentPassword, newPassword } = req.body;
 
-  if (!currentPassword || !newPassword || newPassword.length < 6) {
-    res.status(400).json({ error: 'Valid current password and new password (min 6 characters) required' });
+  if (!currentPassword || !newPassword) {
+    res.status(400).json({ error: 'Current and new password are required' });
+    return;
+  }
+
+  if (newPassword.length < 6) {
+    res.status(400).json({ error: 'New password must be at least 6 characters long' });
     return;
   }
 
   try {
-    let admin: any = null;
-    if (isSupabaseConfigured()) {
-      admin = await supabaseService.getAdminById(req.admin!.id);
-    } else {
-      admin = db.prepare('SELECT * FROM admins WHERE id = ?').get(req.admin!.id);
-    }
+    const admin = await supabaseService.getAdminById(req.admin!.id);
 
     if (!admin) {
       res.status(404).json({ error: 'Admin account not found' });
@@ -105,21 +99,9 @@ router.post('/change-password', requireAdmin, async (req: AuthRequest, res: Resp
     }
 
     const newHash = bcrypt.hashSync(newPassword, 10);
-
-    if (isSupabaseConfigured()) {
-      await supabaseService.updateAdminPassword(req.admin!.id, newHash);
-      try {
-        await supabaseService.deleteOtherAdmins(req.admin!.id);
-      } catch {}
-    }
+    await supabaseService.updateAdminPassword(req.admin!.id, newHash);
     try {
-      db.prepare('DELETE FROM admins;').run();
-      db.prepare('INSERT INTO admins (id, username, password_hash, name) VALUES (?, ?, ?, ?)').run(
-        req.admin!.id,
-        admin.username,
-        newHash,
-        admin.name || 'Store Administrator'
-      );
+      await supabaseService.deleteOtherAdmins(req.admin!.id);
     } catch {}
 
     res.json({ success: true, message: 'Password updated successfully' });
@@ -143,13 +125,13 @@ router.post('/change-username', requireAdmin, async (req: AuthRequest, res: Resp
     return;
   }
 
+  if (!currentPassword) {
+    res.status(400).json({ error: 'Current password is required to verify identity' });
+    return;
+  }
+
   try {
-    let admin: any = null;
-    if (isSupabaseConfigured()) {
-      admin = await supabaseService.getAdminById(req.admin!.id);
-    } else {
-      admin = db.prepare('SELECT * FROM admins WHERE id = ?').get(req.admin!.id);
-    }
+    const admin = await supabaseService.getAdminById(req.admin!.id);
 
     if (!admin) {
       res.status(404).json({ error: 'Admin account not found' });
@@ -157,44 +139,32 @@ router.post('/change-username', requireAdmin, async (req: AuthRequest, res: Resp
     }
 
     const isCurrentValid = bcrypt.compareSync(currentPassword, admin.password_hash);
-
     if (!isCurrentValid) {
-      res.status(400).json({ error: 'Current password is required to change username' });
+      res.status(400).json({ error: 'Current password is incorrect' });
       return;
     }
 
-    if (isSupabaseConfigured()) {
-      const existing = await supabaseService.getAdminByUsername(trimmed);
-      if (existing && existing.id !== req.admin!.id) {
-        res.status(400).json({ error: 'This username is already in use' });
-        return;
-      }
-      await supabaseService.updateAdminUsername(req.admin!.id, trimmed);
-      try {
-        await supabaseService.deleteOtherAdmins(req.admin!.id);
-      } catch {}
+    if (admin.username.toLowerCase() === trimmed.toLowerCase()) {
+      res.status(400).json({ error: 'New username must be different from current username' });
+      return;
     }
 
+    const existing = await supabaseService.getAdminByUsername(trimmed);
+    if (existing && existing.id !== req.admin!.id) {
+      res.status(400).json({ error: 'This username is already taken' });
+      return;
+    }
+
+    await supabaseService.updateAdminUsername(req.admin!.id, trimmed);
     try {
-      const existingLocal = db.prepare('SELECT id FROM admins WHERE username = ? AND id != ?').get(trimmed, req.admin!.id);
-      if (existingLocal) {
-        res.status(400).json({ error: 'This username is already in use' });
-        return;
-      }
-      db.prepare('DELETE FROM admins;').run();
-      db.prepare('INSERT INTO admins (id, username, password_hash, name) VALUES (?, ?, ?, ?)').run(
-        req.admin!.id,
-        trimmed,
-        admin.password_hash,
-        admin.name || 'Store Administrator'
-      );
+      await supabaseService.deleteOtherAdmins(req.admin!.id);
     } catch {}
 
     const token = generateToken({ id: req.admin!.id, username: trimmed, name: req.admin!.name });
 
     res.json({
       success: true,
-      message: 'Username updated successfully',
+      message: `Admin username updated to "${trimmed}"`,
       token,
       admin: {
         id: req.admin!.id,
