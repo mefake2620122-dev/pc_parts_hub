@@ -311,5 +311,45 @@ INSERT INTO combo_items (combo_id, product_id, custom_label) VALUES
 ON CONFLICT DO NOTHING;
 
 -- ==============================================================================
+-- 8. Admin Account Seed
+-- Default login: username = admin, password = pcparthub@2026
+-- Change this password immediately after first login via Admin → Settings
+-- ==============================================================================
+INSERT INTO admins (username, password_hash, name)
+VALUES (
+  'admin',
+  '$2a$10$adFKLaQljYEmrPnb4BFNsuSlVCCPGuX1WWDZXTF9W2BImO9QU1ySa',
+  'Store Administrator'
+)
+ON CONFLICT (username) DO NOTHING;
+
+-- ==============================================================================
+-- 9. Default Site Settings
+-- Edit these values from Admin Panel → Settings after first login
+-- ==============================================================================
+INSERT INTO site_settings (key, value) VALUES
+  ('business_name',    'PC PART HUB'),
+  ('tagline',          'Pre-Owned Parts. Tested for Your Build.'),
+  ('sub_tagline',      'Find the hardware you need. Check the specs. Talk directly to PC Part Hub.'),
+  ('phone',            '+91 91795 27017'),
+  ('whatsapp',         '919179527017'),
+  ('address',          'Shop 14, Commercial Tech Zone, Nehru Place, New Delhi, India 110019'),
+  ('maps_url',         'https://maps.google.com/?q=Nehru+Place+New+Delhi'),
+  ('opening_hours',    'Mon – Sat: 11:00 AM – 8:30 PM (Sunday by Appointment)'),
+  ('instagram_url',    'https://instagram.com/pcparthub'),
+  ('about_text',       'PC PART HUB is a specialized showroom and digital inventory of tested, verified, and certified pre-owned computer hardware. Every GPU, processor, and motherboard undergoes rigorous benchmark testing before cataloguing.'),
+  ('currency',         '₹'),
+  ('trust_card_1_title', 'TESTED HARDWARE'),
+  ('trust_card_1_desc',  'Stress-tested with FurMark, Cinebench & MemTest before inventory intake.'),
+  ('trust_card_2_title', 'REAL INVENTORY'),
+  ('trust_card_2_desc',  'Live stock tracking. What you see is available in our store right now.'),
+  ('trust_card_3_title', 'CLEAR CONDITION'),
+  ('trust_card_3_desc',  'Transparent physical and functional condition ratings with inspection photos.'),
+  ('trust_card_4_title', 'DIRECT WHATSAPP SUPPORT'),
+  ('trust_card_4_desc',  'Speak directly with our hardware technicians for build advice and orders.')
+ON CONFLICT (key) DO NOTHING;
+
+-- ==============================================================================
 -- SCHEMA & DATA SETUP COMPLETE
+-- Login: admin / pcparthub@2026  ← Change after first login!
 -- ==============================================================================

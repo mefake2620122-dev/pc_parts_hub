@@ -22,6 +22,14 @@ export const AdminLayout: React.FC = () => {
   const [authorized, setAuthorized] = useState<boolean | null>(null);
   const [adminUser, setAdminUser] = useState<string>('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
+  const [shopName, setShopName] = useState<string>('PC PART HUB');
+
+  // Fetch business name from settings
+  useEffect(() => {
+    api.getSettings().then(res => {
+      if (res?.settings?.business_name) setShopName(res.settings.business_name);
+    }).catch(() => {});
+  }, []);
 
   useEffect(() => {
     const token = getAuthToken();
@@ -87,7 +95,7 @@ export const AdminLayout: React.FC = () => {
             <Cpu className="w-3.5 h-3.5" />
           </div>
           <span className="font-bold text-sm tracking-tight text-[#1d1d1f]">
-            PC PART HUB <span className="text-[#0071e3] font-normal text-xs ml-0.5">Pro</span>
+            {shopName} <span className="text-[#0071e3] font-normal text-xs ml-0.5">Pro</span>
           </span>
         </Link>
 
@@ -133,7 +141,7 @@ export const AdminLayout: React.FC = () => {
                 <Cpu className="w-4 h-4" />
               </div>
               <span className="font-bold text-sm tracking-tight text-[#1d1d1f]">
-                PC PART HUB <span className="text-[#0071e3] font-normal text-xs ml-1">Pro</span>
+                {shopName} <span className="text-[#0071e3] font-normal text-xs ml-1">Pro</span>
               </span>
             </Link>
             <div className="flex items-center gap-1.5">
