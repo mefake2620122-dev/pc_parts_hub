@@ -29,7 +29,6 @@ export function seedDatabase() {
       address: 'Shop 14, Commercial Tech Zone, Nehru Place, New Delhi, India 110019',
       maps_url: 'https://maps.google.com/?q=Nehru+Place+New+Delhi',
       opening_hours: 'Mon – Sat: 11:00 AM – 8:30 PM (Sunday by Appointment)',
-      instagram_url: 'https://instagram.com/pcparthub',
       about_text: 'PC PART HUB is a specialized showroom and digital inventory of tested, verified, and certified pre-owned computer hardware. Every GPU, processor, and motherboard undergoes rigorous benchmark testing before cataloguing.',
       currency: '₹',
       trust_card_1_title: 'TESTED HARDWARE',

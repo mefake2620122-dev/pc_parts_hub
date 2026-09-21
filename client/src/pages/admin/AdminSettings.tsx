@@ -368,18 +368,6 @@ export const AdminSettings: React.FC = () => {
                 />
               </div>
 
-              <div className="space-y-1.5 sm:col-span-2">
-                <label className="text-xs font-semibold text-[#6e6e73] uppercase tracking-wider block">
-                  Instagram Profile URL
-                </label>
-                <input
-                  type="text"
-                  value={settings.instagram_url || ''}
-                  onChange={(e) => handleChange('instagram_url', e.target.value)}
-                  placeholder="https://instagram.com/pcparthub"
-                  className="w-full py-2.5 px-3.5 bg-[#f5f5f7] border border-black/10 rounded-xl text-sm text-[#1d1d1f] focus:outline-none focus:border-[#0071e3]"
-                />
-              </div>
 
               <div className="space-y-1.5 sm:col-span-2">
                 <label className="text-xs font-semibold text-[#6e6e73] uppercase tracking-wider block">

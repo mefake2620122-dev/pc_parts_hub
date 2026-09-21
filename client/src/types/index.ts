@@ -81,9 +81,13 @@ export interface SiteSettings {
   address?: string;
   maps_url?: string;
   opening_hours?: string;
-  instagram_url?: string;
   about_text?: string;
   currency?: string;
+  hero_badge?: string;
+  hero_title?: string;
+  hero_subtitle?: string;
+  hero_desc?: string;
+  hero_image?: string;
   trust_card_1_title?: string;
   trust_card_1_desc?: string;
   trust_card_2_title?: string;
