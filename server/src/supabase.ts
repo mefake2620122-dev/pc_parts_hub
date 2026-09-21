@@ -289,6 +289,25 @@ export const supabaseService = {
     return data;
   },
 
+  // Helper: delete images from Supabase Storage bucket (only for supabase-hosted URLs)
+  async deleteStorageImages(imageUrls: string[]): Promise<void> {
+    const client = getSupabase();
+    if (!client || !imageUrls || imageUrls.length === 0) return;
+    const BUCKET = 'pc-parts-images';
+    const paths = imageUrls
+      .filter(url => url && typeof url === 'string' && url.includes(BUCKET))
+      .map(url => {
+        try {
+          // Extract path after bucket name: 'parts/filename.jpg'
+          return url.split(`/${BUCKET}/`)[1] || null;
+        } catch { return null; }
+      })
+      .filter(Boolean) as string[];
+    if (paths.length > 0) {
+      await client.storage.from(BUCKET).remove(paths);
+    }
+  },
+
   async updateProduct(id: number, productData: any, images?: string[]): Promise<boolean> {
     const client = getSupabase();
     if (!client) return false;
@@ -297,7 +316,19 @@ export const supabaseService = {
     if (error) return false;
 
     if (Array.isArray(images)) {
+      // Get old image URLs before deleting (to clean up Storage)
+      const { data: oldImages } = await client
+        .from('product_images')
+        .select('image_url')
+        .eq('product_id', id);
+
       await client.from('product_images').delete().eq('product_id', id);
+
+      // Delete old files from Supabase Storage
+      if (oldImages && oldImages.length > 0) {
+        await this.deleteStorageImages(oldImages.map((i: any) => i.image_url));
+      }
+
       if (images.length > 0) {
         const imgRecords = images.map((url, idx) => ({
           product_id: id,
@@ -322,8 +353,21 @@ export const supabaseService = {
   async deleteProduct(id: number): Promise<boolean> {
     const client = getSupabase();
     if (!client) return false;
+
+    // Fetch image URLs before deletion so we can clean up Storage
+    const { data: images } = await client
+      .from('product_images')
+      .select('image_url')
+      .eq('product_id', id);
+
     await client.from('product_images').delete().eq('product_id', id);
     const { error } = await client.from('products').delete().eq('id', id);
+
+    // Delete files from Supabase Storage (fire-and-forget, don't block response)
+    if (images && images.length > 0) {
+      this.deleteStorageImages(images.map((i: any) => i.image_url)).catch(() => {});
+    }
+
     return !error;
   },
 
@@ -410,6 +454,14 @@ export const supabaseService = {
     const client = getSupabase();
     if (!client) return false;
 
+    // If image is being replaced, delete old one from Storage
+    if (comboData.image_url !== undefined) {
+      const { data: oldCombo } = await client.from('combos').select('image_url').eq('id', id).maybeSingle();
+      if (oldCombo?.image_url && oldCombo.image_url !== comboData.image_url) {
+        await this.deleteStorageImages([oldCombo.image_url]);
+      }
+    }
+
     const { error } = await client.from('combos').update(comboData).eq('id', id);
     if (error) return false;
 
@@ -432,8 +484,18 @@ export const supabaseService = {
   async deleteCombo(id: number): Promise<boolean> {
     const client = getSupabase();
     if (!client) return false;
+
+    // Fetch combo image before deletion for Storage cleanup
+    const { data: combo } = await client.from('combos').select('image_url').eq('id', id).maybeSingle();
+
     await client.from('combo_items').delete().eq('combo_id', id);
     const { error } = await client.from('combos').delete().eq('id', id);
+
+    // Delete combo image from Storage
+    if (combo?.image_url) {
+      this.deleteStorageImages([combo.image_url]).catch(() => {});
+    }
+
     return !error;
   },
 
