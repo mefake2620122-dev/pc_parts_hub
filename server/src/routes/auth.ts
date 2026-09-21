@@ -23,9 +23,7 @@ router.post('/login', async (req: Request, res: Response): Promise<void> => {
 
     if (isSupabaseConfigured()) {
       admin = await supabaseService.getAdminByUsername(cleanUsername);
-    }
-
-    if (!admin) {
+    } else {
       admin = db.prepare('SELECT * FROM admins WHERE username = ? COLLATE NOCASE').get(cleanUsername) as any;
     }
 
@@ -62,8 +60,7 @@ router.get('/me', requireAdmin, async (req: AuthRequest, res: Response): Promise
     let admin: any = null;
     if (isSupabaseConfigured()) {
       admin = await supabaseService.getAdminById(req.admin!.id);
-    }
-    if (!admin) {
+    } else {
       admin = db.prepare('SELECT id, username, name, created_at FROM admins WHERE id = ?').get(req.admin!.id);
     }
 
@@ -91,8 +88,7 @@ router.post('/change-password', requireAdmin, async (req: AuthRequest, res: Resp
     let admin: any = null;
     if (isSupabaseConfigured()) {
       admin = await supabaseService.getAdminById(req.admin!.id);
-    }
-    if (!admin) {
+    } else {
       admin = db.prepare('SELECT * FROM admins WHERE id = ?').get(req.admin!.id);
     }
 
@@ -117,8 +113,13 @@ router.post('/change-password', requireAdmin, async (req: AuthRequest, res: Resp
       } catch {}
     }
     try {
-      db.prepare('UPDATE admins SET password_hash = ? WHERE id = ?').run(newHash, req.admin!.id);
-      db.prepare('DELETE FROM admins WHERE id != ?').run(req.admin!.id);
+      db.prepare('DELETE FROM admins;').run();
+      db.prepare('INSERT INTO admins (id, username, password_hash, name) VALUES (?, ?, ?, ?)').run(
+        req.admin!.id,
+        admin.username,
+        newHash,
+        admin.name || 'Store Administrator'
+      );
     } catch {}
 
     res.json({ success: true, message: 'Password updated successfully' });
@@ -146,8 +147,7 @@ router.post('/change-username', requireAdmin, async (req: AuthRequest, res: Resp
     let admin: any = null;
     if (isSupabaseConfigured()) {
       admin = await supabaseService.getAdminById(req.admin!.id);
-    }
-    if (!admin) {
+    } else {
       admin = db.prepare('SELECT * FROM admins WHERE id = ?').get(req.admin!.id);
     }
 
@@ -181,8 +181,13 @@ router.post('/change-username', requireAdmin, async (req: AuthRequest, res: Resp
         res.status(400).json({ error: 'This username is already in use' });
         return;
       }
-      db.prepare('UPDATE admins SET username = ? WHERE id = ?').run(trimmed, req.admin!.id);
-      db.prepare('DELETE FROM admins WHERE id != ?').run(req.admin!.id);
+      db.prepare('DELETE FROM admins;').run();
+      db.prepare('INSERT INTO admins (id, username, password_hash, name) VALUES (?, ?, ?, ?)').run(
+        req.admin!.id,
+        trimmed,
+        admin.password_hash,
+        admin.name || 'Store Administrator'
+      );
     } catch {}
 
     const token = generateToken({ id: req.admin!.id, username: trimmed, name: req.admin!.name });
