@@ -24,3 +24,7 @@ server/uploads/*
 .DS_Store
 Thumbs.db
 *.log
+
+# Database setup scripts (local reference only)
+supabase-schema.sql
+
