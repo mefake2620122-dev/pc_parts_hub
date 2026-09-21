@@ -79,7 +79,7 @@ export function getWhatsAppUrl(arg1?: string, arg2?: string): string {
  */
 function parseArgs(arg1?: string, arg2?: string): { phone: string; message: string } {
   const defaultPhone = contactConfig.whatsappNumber || DEFAULT_WA_FORMAT;
-  const defaultMsg = contactConfig.defaultWhatsAppMessage || 'Hello PC PART HUB, I have an enquiry regarding hardware.';
+  const defaultMsg = contactConfig.defaultWhatsAppMessage || 'Hello, I have an enquiry regarding hardware.';
 
   if (!arg1 && !arg2) {
     return { phone: defaultPhone, message: defaultMsg };
@@ -141,7 +141,7 @@ export function generateProductWhatsAppMessage(
     msg += `• Status: ${product.stock_status.replace('_', ' ')}\n`;
   }
 
-  msg += `\nIs this unit available for inspection / store pickup in Nehru Place?`;
+  msg += `\nIs this unit available for inspection / store pickup?`;
   return msg;
 }
 
@@ -165,5 +165,5 @@ export function generateComboWhatsAppMessage(
  */
 export function generateGeneralWhatsAppMessage(storeName?: string): string {
   const brand = storeName || contactConfig.businessName;
-  return `Hello ${brand}, I am looking for pre-owned PC hardware components in Nehru Place. Please share today's available inventory and pricing.`;
+  return `Hello ${brand}, I am looking for pre-owned PC hardware components. Please share today's available inventory and pricing.`;
 }

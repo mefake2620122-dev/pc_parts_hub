@@ -41,7 +41,7 @@ export const PartDetail: React.FC<PartDetailProps> = ({ settings }) => {
   const businessName = settings?.business_name || contactConfig.businessName;
   const whatsappNum = settings?.whatsapp || contactConfig.whatsappNumber;
   const phoneNum = settings?.phone || contactConfig.phoneNumber;
-  const storeAddress = settings?.address || 'Shop 14, Commercial Tech Zone, Nehru Place, New Delhi';
+  const storeAddress = settings?.address || 'Showroom testing & store pickup available';
 
   useEffect(() => {
     async function loadProduct() {
@@ -336,7 +336,7 @@ export const PartDetail: React.FC<PartDetailProps> = ({ settings }) => {
               <span>In-Store Inspection & Testing Available</span>
             </div>
             <p className="leading-relaxed">
-              Visit our Nehru Place showroom to inspect this component in a live test-bench setup before completing your deal.
+              {settings?.address ? `Visit our store at ${settings.address} to inspect this component in a live test-bench setup.` : 'Visit our showroom to inspect this component in a live test-bench setup before completing your deal.'}
             </p>
           </div>
 

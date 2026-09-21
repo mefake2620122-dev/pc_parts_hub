@@ -114,7 +114,7 @@ export const Builds: React.FC<BuildsProps> = ({ settings }) => {
               {/* Bottom Actions */}
               <div className="pt-4 border-t border-black/5 flex flex-col sm:flex-row items-center justify-between gap-3">
                 <span className="text-xs text-[#86868b] text-center sm:text-left">
-                  Nehru Place store pickup available
+                  {settings?.address ? 'In-store pickup & testing available' : 'Store pickup available'}
                 </span>
 
                 <a

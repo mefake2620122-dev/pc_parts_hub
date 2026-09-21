@@ -40,7 +40,7 @@ export function WhatsAppGlobalHandler({ defaultPhone, defaultMsg }: { defaultPho
       if (!isWhatsApp) return;
 
       let phone = defaultPhone || contactConfig.whatsappNumber || '919179527017';
-      let text = defaultMsg || contactConfig.defaultWhatsAppMessage || 'Hello PC PART HUB, I have an enquiry regarding hardware.';
+      let text = defaultMsg || contactConfig.defaultWhatsAppMessage || 'Hello, I have an enquiry regarding hardware.';
 
       try {
         if (href.startsWith('http')) {

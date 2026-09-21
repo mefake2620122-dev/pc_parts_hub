@@ -12,8 +12,8 @@ export const Contact: React.FC<ContactProps> = ({ settings }) => {
   const businessName = settings?.business_name || contactConfig.businessName;
   const phone = settings?.phone || contactConfig.phoneNumber;
   const whatsapp = settings?.whatsapp || contactConfig.whatsappNumber;
-  const address = settings?.address || 'Shop 14, Commercial Tech Zone, Nehru Place, New Delhi, India 110019';
-  const mapsUrl = settings?.maps_url || 'https://maps.google.com/?q=Nehru+Place+New+Delhi';
+  const address = settings?.address || 'Showroom testing & store pickup available';
+  const mapsUrl = settings?.maps_url || '';
   const hours = settings?.opening_hours || 'Mon – Sat: 11:00 AM – 8:30 PM (Sunday by Appointment)';
 
   return (
@@ -130,7 +130,7 @@ export const Contact: React.FC<ContactProps> = ({ settings }) => {
             In-Person Hardware Testing & Inspection Policy
           </h4>
           <p className="leading-relaxed">
-            We actively encourage buyers to visit our store in Nehru Place. You can test your chosen GPU on our live test-bench, run FurMark or 3DMark benchmarks, check temperatures in person, and collect your hardware with complete peace of mind.
+            We actively encourage buyers to visit our showroom. You can test your chosen GPU on our live test-bench, run FurMark or 3DMark benchmarks, check temperatures in person, and collect your hardware with complete peace of mind.
           </p>
         </div>
       </div>

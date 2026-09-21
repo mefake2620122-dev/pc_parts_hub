@@ -14,7 +14,7 @@ export const Footer: React.FC<FooterProps> = ({ settings }) => {
   const tagline = settings?.tagline || 'Pre-Owned Parts. Ready for Your Next Build.';
   const phone = settings?.phone || contactConfig.phoneNumber;
   const whatsapp = settings?.whatsapp || contactConfig.whatsappNumber;
-  const address = settings?.address || 'Shop 14, Commercial Tech Zone, Nehru Place, New Delhi, India 110019';
+  const address = settings?.address || 'Showroom testing & store pickup available';
   const hours = settings?.opening_hours || 'Mon – Sat: 11:00 AM – 8:30 PM';
 
   return (

@@ -41,7 +41,7 @@ export const SEO: React.FC<SEOProps> = ({
     };
 
     // 3. Meta Description & Keywords
-    const finalDesc = description || 'Premium pre-owned, stress-tested PC components and hardware showroom in Nehru Place. Browse GPUs, CPUs, motherboards, RAM, and storage with direct WhatsApp enquiry.';
+    const finalDesc = description || `Premium pre-owned, stress-tested PC components and hardware showroom at ${brand}. Browse GPUs, CPUs, motherboards, RAM, and storage with direct WhatsApp enquiry.`;
     setMetaTag('name', 'description', finalDesc);
 
     if (keywords) {
@@ -85,7 +85,7 @@ export const SEO: React.FC<SEOProps> = ({
     } else if (scriptTag) {
       scriptTag.remove();
     }
-  }, [title, description, keywords, canonical, ogImage, ogType, jsonLd]);
+  }, [title, description, keywords, canonical, ogImage, ogType, jsonLd, siteName]);
 
   return null;
 };

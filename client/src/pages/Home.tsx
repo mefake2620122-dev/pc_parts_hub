@@ -174,7 +174,7 @@ export const Home: React.FC<HomeProps> = ({ settings }) => {
               <div className="pt-3 flex items-center justify-center lg:justify-start gap-4 sm:gap-6 text-xs text-[#86868b] flex-wrap">
                 <span className="flex items-center gap-1.5">
                   <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                  Nehru Place Store
+                  {settings?.address ? (settings.address.split(',')[1]?.trim() || settings.address.split(',')[0]?.trim() || 'Verified Store') : 'Verified Store'}
                 </span>
                 <span>•</span>
                 <span>Stress-Tested Hardware</span>
@@ -620,7 +620,7 @@ export const Home: React.FC<HomeProps> = ({ settings }) => {
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-12 space-y-2">
           <span className="text-xs font-semibold text-[#0071e3] tracking-wider uppercase">
-            The Hub Standard
+            Store Standards
           </span>
           <h2 className="text-2xl sm:text-4xl font-bold text-[#1d1d1f] tracking-tight">
             Built Around Real Inventory.
@@ -713,7 +713,7 @@ export const Home: React.FC<HomeProps> = ({ settings }) => {
               Have a Specific Part in Mind?
             </h2>
             <p className="text-sm text-[#86868b] leading-relaxed">
-              Connect directly with our Nehru Place store team on WhatsApp. Get live stock confirmation, custom photos, or build guidance in minutes.
+              Connect directly with our {businessName} store team on WhatsApp. Get live stock confirmation, custom photos, or build guidance in minutes.
             </p>
           </div>
 
@@ -742,7 +742,7 @@ export const Home: React.FC<HomeProps> = ({ settings }) => {
           </div>
 
           <p className="text-xs text-[#86868b] pt-1">
-            Shop 14, Commercial Tech Zone, Nehru Place • Open Monday to Saturday
+            {settings?.address ? `${settings.address} • ${settings.opening_hours || 'Open Mon – Sat'}` : (settings?.opening_hours || 'Store pickup & testing available')}
           </p>
         </div>
       </section>

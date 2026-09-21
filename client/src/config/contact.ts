@@ -18,7 +18,7 @@ export const contactConfig: BusinessContactConfig = {
   businessName: import.meta.env.VITE_BUSINESS_NAME || 'PC PART HUB',
   defaultWhatsAppMessage:
     import.meta.env.VITE_DEFAULT_WHATSAPP_MESSAGE ||
-    'Hello PC PART HUB, I would like to enquire about available PC components for my custom build.',
+    'Hello, I would like to enquire about available PC components for my custom build.',
 };
 
 export const businessContact = contactConfig;
