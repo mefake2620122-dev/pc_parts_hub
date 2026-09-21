@@ -129,7 +129,7 @@ export const Home: React.FC<HomeProps> = ({ settings }) => {
               {/* Eyebrow badge */}
               <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#f5f5f7] border border-black/5 text-xs font-semibold tracking-widest text-[#86868b] uppercase">
                 <Sparkles className="w-3.5 h-3.5 text-[#0071e3]" />
-                <span>{settings?.hero_badge || 'PC PART HUB'}</span>
+                <span>{settings?.hero_badge || businessName}</span>
               </div>
 
               {/* Headlines */}
@@ -144,7 +144,7 @@ export const Home: React.FC<HomeProps> = ({ settings }) => {
 
               {/* Supporting Copy */}
               <p className="text-sm sm:text-base text-[#86868b] max-w-lg mx-auto lg:mx-0 leading-relaxed">
-                {settings?.hero_desc || 'Explore available components, compare specifications and connect directly with PC Part Hub for live stock confirmation and store pickup.'}
+                {settings?.hero_desc || `Explore available components, compare specifications and connect directly with ${businessName} for live stock confirmation and store pickup.`}
               </p>
 
               {/* Action Buttons */}
@@ -644,7 +644,7 @@ export const Home: React.FC<HomeProps> = ({ settings }) => {
             },
             {
               title: 'DIRECT CONTACT',
-              desc: 'Talk directly to PC Part Hub through WhatsApp or phone without intermediaries.',
+              desc: `Talk directly to ${businessName} through WhatsApp or phone without intermediaries.`,
               num: '03'
             },
             {

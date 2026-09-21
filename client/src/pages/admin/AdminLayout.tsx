@@ -24,11 +24,24 @@ export const AdminLayout: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState<boolean>(false);
   const [shopName, setShopName] = useState<string>('PC PART HUB');
 
-  // Fetch business name from settings
+  // Fetch business name from settings and keep in sync
   useEffect(() => {
-    api.getSettings().then(res => {
-      if (res?.settings?.business_name) setShopName(res.settings.business_name);
-    }).catch(() => {});
+    const fetchShopName = () => {
+      api.getSettings().then(res => {
+        if (res?.settings?.business_name) setShopName(res.settings.business_name);
+      }).catch(() => {});
+    };
+    fetchShopName();
+
+    const handleSettingsUpdated = (e: any) => {
+      if (e?.detail?.business_name) {
+        setShopName(e.detail.business_name);
+      } else {
+        fetchShopName();
+      }
+    };
+    window.addEventListener('site_settings_updated', handleSettingsUpdated);
+    return () => window.removeEventListener('site_settings_updated', handleSettingsUpdated);
   }, []);
 
   useEffect(() => {

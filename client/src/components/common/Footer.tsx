@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { Cpu, Phone, MessageSquare, MapPin, Clock, ShieldCheck, Lock } from 'lucide-react';
 import { SiteSettings } from '../../types';
 import { getWhatsAppUrl, getDialerUrl, generateGeneralWhatsAppMessage, contactConfig, formatPhoneDisplay } from '../../utils/whatsapp';
+import { renderBrandLogo } from '../../utils/brand';
 
 interface FooterProps {
   settings?: SiteSettings;
@@ -26,9 +27,7 @@ export const Footer: React.FC<FooterProps> = ({ settings }) => {
               <div className="w-8 h-8 rounded-full bg-[#1d1d1f] flex items-center justify-center text-white">
                 <Cpu className="w-4 h-4 text-white" />
               </div>
-              <span className="text-base font-bold tracking-tight text-[#1d1d1f]">
-                PC PART <span className="text-[#0071e3]">HUB</span>
-              </span>
+              {renderBrandLogo(businessName)}
             </Link>
             <p className="text-sm font-semibold text-[#1d1d1f]">
               {tagline}

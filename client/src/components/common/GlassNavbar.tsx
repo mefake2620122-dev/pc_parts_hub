@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Search, MessageSquare, Menu, X, Cpu, Command, Shield } from 'lucide-react';
 import { SiteSettings } from '../../types';
 import { getWhatsAppUrl, generateGeneralWhatsAppMessage, contactConfig } from '../../utils/whatsapp';
+import { renderBrandLogo } from '../../utils/brand';
 import SearchOverlay from './SearchOverlay';
 
 interface NavbarProps {
@@ -71,9 +72,7 @@ export const GlassNavbar: React.FC<NavbarProps> = ({ settings }) => {
                 <Cpu className="w-4 h-4 text-white" />
               </div>
               <div className="flex items-baseline gap-1">
-                <span className="text-base font-bold tracking-tight text-[#1d1d1f]">
-                  PC PART <span className="text-[#0071e3]">HUB</span>
-                </span>
+                {renderBrandLogo(businessName)}
               </div>
             </Link>
 

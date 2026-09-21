@@ -119,6 +119,13 @@ export const AdminSettings: React.FC = () => {
     setError('');
     try {
       await api.updateSettings(settings as Record<string, string>);
+      
+      // Notify App.tsx and other components in real-time
+      window.dispatchEvent(new CustomEvent('site_settings_updated', { detail: settings }));
+      try {
+        localStorage.setItem('site_settings_last_updated', Date.now().toString());
+      } catch (_) {}
+
       setSuccess('Settings successfully updated and live on storefront');
       setTimeout(() => setSuccess(''), 3500);
     } catch (err: any) {
