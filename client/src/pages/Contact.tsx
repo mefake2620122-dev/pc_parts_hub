@@ -19,9 +19,10 @@ export const Contact: React.FC<ContactProps> = ({ settings }) => {
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-32 sm:pb-28 space-y-12 bg-white">
       <SEO
-        title={`Contact ${businessName} — Nehru Place Store & WhatsApp`}
-        description={`Connect directly with ${businessName} in Nehru Place, New Delhi. Phone: ${phone}, WhatsApp: ${whatsapp}. Visit our store for in-person hardware testing and pickup.`}
-        keywords="contact PC Part Hub, Nehru Place computer shop phone, PC hardware showroom Delhi"
+        title={`Contact ${businessName} — Store & WhatsApp`}
+        description={`Connect directly with ${businessName}${address ? ' at ' + address.split(',').slice(0,2).join(',') : ''}. Phone: ${phone}. Visit our store for in-person hardware testing and pickup.`}
+        keywords={`contact ${businessName}, computer shop phone, PC hardware showroom`}
+        siteName={businessName}
       />
       
       {/* Header */}

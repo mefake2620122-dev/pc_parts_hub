@@ -108,12 +108,12 @@ export const PartDetail: React.FC<PartDetailProps> = ({ settings }) => {
     '@type': 'Product',
     name: product.name,
     image: images.map((img) => img.image_url),
-    description: product.description || `Pre-owned ${product.name} in ${product.condition} condition. Tested and certified at PC Part Hub.`,
+    description: product.description || `Pre-owned ${product.name} in ${product.condition} condition. Tested and certified at ${businessName}.`,
     sku: product.product_code,
     mpn: product.model || product.product_code,
     brand: {
       '@type': 'Brand',
-      name: product.brand || 'PC Part Hub'
+      name: product.brand || businessName
     },
     itemCondition: product.condition === 'Like New' ? 'https://schema.org/LikeNewCondition' : 'https://schema.org/UsedCondition',
     offers: {
@@ -133,11 +133,12 @@ export const PartDetail: React.FC<PartDetailProps> = ({ settings }) => {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-32 sm:pb-28 space-y-10 bg-white">
       <SEO
         title={`${product.name} (${product.condition})`}
-        description={`Buy pre-owned ${product.name} at ₹${product.price?.toLocaleString('en-IN')}. Condition: ${product.condition}. Verified stock at PC Part Hub Nehru Place showroom.`}
-        keywords={`${product.name}, ${product.brand}, pre-owned ${product.category_name}, used PC hardware Nehru Place`}
+        description={`Buy pre-owned ${product.name} at ₹${product.price?.toLocaleString('en-IN')}. Condition: ${product.condition}. Verified stock at ${businessName} showroom.`}
+        keywords={`${product.name}, ${product.brand}, pre-owned ${product.category_name}, used PC hardware, ${businessName}`}
         ogImage={images[0]?.image_url}
         ogType="product"
         jsonLd={productJsonLd}
+        siteName={businessName}
       />
       
       {/* Top Breadcrumb & Share */}

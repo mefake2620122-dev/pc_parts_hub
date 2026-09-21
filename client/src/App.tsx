@@ -59,6 +59,8 @@ export function App() {
         const res = await api.getSettings();
         setSettings(res.settings);
         if (res.settings.business_name) {
+          // Set global so SEO component always has the brand name
+          (window as any).__siteName = res.settings.business_name;
           document.title = `${res.settings.business_name} — Pre-Owned PC Components & Hardware`;
         }
       } catch (err) {

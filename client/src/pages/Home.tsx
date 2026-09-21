@@ -109,8 +109,9 @@ export const Home: React.FC<HomeProps> = ({ settings }) => {
     <div className="space-y-24 sm:space-y-32 pb-28 sm:pb-20 bg-[#ffffff]">
       <SEO
         title="Power Your Next Build — Quality Pre-Owned PC Hardware"
-        description="Explore premium pre-owned and stress-tested PC components in Nehru Place. Live graphics cards, processors, motherboards, RAM, storage, and custom build combos."
-        keywords="PC hardware Nehru Place, pre-owned GPU, used graphics card Delhi, refurbished PC parts, RTX 3060 price, gaming PC build India"
+        description={`Explore premium pre-owned and stress-tested PC components at ${businessName}. Live graphics cards, processors, motherboards, RAM, storage, and custom build combos.`}
+        keywords={`PC hardware, pre-owned GPU, used graphics card, refurbished PC parts, gaming PC build, ${businessName}`}
+        siteName={businessName}
       />
       
       {/* 1. CINEMATIC HARDWARE HERO SECTION */}

@@ -12,13 +12,15 @@ export const About: React.FC<AboutProps> = ({ settings }) => {
   const businessName = settings?.business_name || contactConfig.businessName;
   const whatsappNum = settings?.whatsapp || contactConfig.whatsappNumber;
   const aboutCustom = settings?.about_text;
+  const address = settings?.address || '';
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-32 sm:pb-28 space-y-14 bg-white">
       <SEO
         title={`About ${businessName} — Standards & Hardware Testing Process`}
-        description={`Learn about ${businessName}'s 4-stage benchmark testing procedure for pre-owned computer hardware in Nehru Place. FurMark, Cinebench, and MemTest verified.`}
-        keywords="about PC Part Hub, Nehru Place hardware testing, pre-owned GPU benchmark, certified used PC parts"
+        description={`Learn about ${businessName}'s benchmark testing procedure for pre-owned computer hardware${address ? ' in ' + address.split(',').slice(0, 2).join(',') : ''}. FurMark, Cinebench, and MemTest verified.`}
+        keywords={`about ${businessName}, hardware testing, pre-owned GPU benchmark, certified used PC parts`}
+        siteName={businessName}
       />
       
       {/* Header */}

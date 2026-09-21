@@ -34,8 +34,9 @@ export const Builds: React.FC<BuildsProps> = ({ settings }) => {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-32 sm:pb-28 space-y-12 bg-white">
       <SEO
         title="Curated Hardware Combos & PC Builds"
-        description="Explore balanced pre-tested PC component combinations and upgrade packs in Nehru Place. Bottleneck-free CPU, GPU, motherboard bundles."
-        keywords="PC build combos, gaming combo pack, Ryzen RTX bundle, PC Part Hub builds"
+        description={`Explore balanced pre-tested PC component combinations and upgrade packs from ${businessName}. Bottleneck-free CPU, GPU, motherboard bundles.`}
+        keywords={`PC build combos, gaming combo pack, Ryzen RTX bundle, ${businessName} builds`}
+        siteName={businessName}
       />
       
       {/* Page Header */}

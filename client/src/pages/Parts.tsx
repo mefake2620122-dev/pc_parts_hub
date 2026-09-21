@@ -11,6 +11,8 @@ interface PartsProps {
 }
 
 export const Parts: React.FC<PartsProps> = ({ settings }) => {
+  const businessName = settings?.business_name || 'PC PART HUB';
+  const address = settings?.address || '';
   const [searchParams, setSearchParams] = useSearchParams();
 
   // State from URL
@@ -120,8 +122,9 @@ export const Parts: React.FC<PartsProps> = ({ settings }) => {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-32 sm:pb-20 space-y-8 bg-white">
       <SEO
         title={pageTitle}
-        description="Filter and search available pre-owned PC parts in Nehru Place showroom. Genuine GPUs, CPUs, motherboards, RAM, PSUs with live stock ratings."
-        keywords="PC components catalog, buy used GPU, RTX 3070 second hand, pre-owned processor, DDR4 RAM Nehru Place"
+        description={`Filter and search available pre-owned PC parts at ${businessName}${address ? ', ' + address.split(',').slice(0,2).join(',') : ''}. Genuine GPUs, CPUs, motherboards, RAM, PSUs with live stock ratings.`}
+        keywords={`PC components catalog, buy used GPU, RTX second hand, pre-owned processor, DDR4 RAM, ${businessName}`}
+        siteName={businessName}
       />
       
       {/* Page Header */}

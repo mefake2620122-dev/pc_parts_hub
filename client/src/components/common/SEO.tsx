@@ -8,6 +8,8 @@ interface SEOProps {
   ogImage?: string;
   ogType?: string;
   jsonLd?: Record<string, any>;
+  /** Pass settings?.business_name here so page titles update from admin panel */
+  siteName?: string;
 }
 
 export const SEO: React.FC<SEOProps> = ({
@@ -17,12 +19,14 @@ export const SEO: React.FC<SEOProps> = ({
   canonical,
   ogImage,
   ogType = 'website',
-  jsonLd
+  jsonLd,
+  siteName,
 }) => {
   useEffect(() => {
-    // 1. Title
-    const defaultTitle = 'PC PART HUB — Premium PC Components & Hardware';
-    const finalTitle = title ? `${title} | PC PART HUB` : defaultTitle;
+    // 1. Title — use dynamic siteName from settings if provided
+    const brand = siteName || (window as any).__siteName || 'PC PART HUB';
+    const defaultTitle = `${brand} — Pre-Owned PC Components & Hardware`;
+    const finalTitle = title ? `${title} | ${brand}` : defaultTitle;
     document.title = finalTitle;
 
     // 2. Helper to set or update meta tag
